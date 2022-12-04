@@ -2,6 +2,7 @@ import time
 import tasko
 
 import lib.reader as reader
+from sd import SD
 import random
 try:
     from ulab.numpy import array
@@ -93,6 +94,7 @@ class Satellite:
         # debug utilities
         self.sim = False
         self.randomize_voltage = False
+        self.sdcard = SD()
 
     @property
     def acceleration(self):

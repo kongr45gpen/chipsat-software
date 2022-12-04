@@ -1,6 +1,6 @@
 # Transmit "Hello World" beacon
 
-from lib.template_task import Task
+from Tasks.log_task import Task
 import radio_utils.transmission_queue as tq
 from radio_utils.message import Message
 from pycubed import cubesat

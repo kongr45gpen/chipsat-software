@@ -6,7 +6,7 @@ When contact is established with the groundstation
 If f_burn is false and the cubesat has been up for 5 minutes, the burnwire is activated.
 Every 24 hours the cubesat activates the burn wire.
 """
-from lib.template_task import Task
+from Tasks.log_task import Task
 from pycubed import cubesat
 from state_machine import state_machine
 import time
