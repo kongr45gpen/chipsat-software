@@ -9,7 +9,6 @@ sys.path.insert(0, './state_machine/frame')
 
 from lib.logs import beacon_packet, unpack_beacon
 from pycubed import cubesat
-from state_machine import state_machine
 
 class TestLogs(unittest.TestCase):
 

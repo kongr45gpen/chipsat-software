@@ -9,8 +9,8 @@ except ImportError:
 beacon_format = 'H' + 'f' * 11  # 1 short + 11 floats
 
 def beacon_packet():
-    """Creates a beacon packet containing the: boot count, battery voltage, 
-    CPU temperature, IMU temperature, gyro reading, mag reading, 
+    """Creates a beacon packet containing the: boot count, battery voltage,
+    CPU temperature, IMU temperature, gyro reading, mag reading,
     radio signal strength (RSSI), radio frequency error (FEI).
 
     This data is packed into a c struct using `struct.pack`.
