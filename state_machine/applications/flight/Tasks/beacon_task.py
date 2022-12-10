@@ -1,6 +1,6 @@
 # Transmit "Hello World" beacon
 
-from lib.template_task import Task
+from Tasks.log import LogTask as Task
 import time
 import os
 import logs
