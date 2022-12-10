@@ -60,7 +60,6 @@ class _Satellite:
     LOW_VOLTAGE = 4.0
 
     def __init__(self):
-        self.f_contact = True
         self.task = None
         self.scheduled_tasks = {}
 

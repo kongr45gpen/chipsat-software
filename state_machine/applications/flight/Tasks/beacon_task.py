@@ -27,7 +27,7 @@ class task(Task):
             try:
                 # This line to be removed when testing on hardware which already has the sd directory
                 # leave this file in when testing on emulation
-                os.mkdir('/sd')
+                # os.mkdir('/sd')
 
                 os.mkdir(log_directory)
                 # make sure to still log file when making the directory or else we lose the first beacon_packet of data
