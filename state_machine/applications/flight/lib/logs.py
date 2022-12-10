@@ -34,7 +34,6 @@ def beacon_packet(task):
                        mag[0], mag[1], mag[2])
 
 
-
 def human_time_stamp():
     """Returns a human readable time stamp in the format: 'year.month.day hour:min'
     Gets the time from the RTC."""
@@ -63,4 +62,3 @@ def unpack_beacon(bytes):
     mag = array([mag0, mag1, mag2])
 
     return state_byte, cpu_temp, imu_temp, gyro, acc, mag
-    
