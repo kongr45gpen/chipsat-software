@@ -25,3 +25,10 @@ def beacon_packet(task):
                        gyro[0], gyro[1], gyro[2],
                        acc[0], acc[1], acc[2],
                        mag[0], mag[1], mag[2])
+
+
+def human_time_stamp():
+    """Returns a human readable time stamp in the format: 'year.month.day hour:min'
+    Gets the time from the RTC."""
+    t = cubesat.rtc.datetime
+    return f'{t.tm_year}.{t.tm_mon}.{t.tm_mday}.{t.tm_hour}:{t.tm_min}:{t.tm_sec}'

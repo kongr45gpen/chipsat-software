@@ -4,6 +4,7 @@ import tasko
 import lib.reader as reader
 from lib.bitflags import bitFlag, multiBitFlag, multiByte
 from lib.radio_driver import Radio
+from sd import SD
 import random
 try:
     from ulab.numpy import array
@@ -60,6 +61,7 @@ class _Satellite:
     LOW_VOLTAGE = 4.0
 
     def __init__(self):
+        self.f_contact = True
         self.task = None
         self.scheduled_tasks = {}
 
