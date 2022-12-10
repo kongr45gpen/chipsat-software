@@ -15,6 +15,9 @@ from radio_utils.message import Message
 import json
 import supervisor
 from logs import beacon_packet
+import msgpack
+from io import BytesIO
+from time import struct_time
 
 NO_OP = b'\x00\x00'
 HARD_RESET = b'\x00\x01'
@@ -28,6 +31,8 @@ COPY_FILE = b'\x00\x09'
 DELETE_FILE = b'\x00\x10'
 RELOAD = b'\x00\x11'
 REQUEST_BEACON = b'\x00\x12'
+GET_RTC = b'\x00\x13'
+SET_RTC = b'\x00\x14'
 
 def noop(self):
     """No operation"""
@@ -154,6 +159,15 @@ def request_beacon(task):
     """
     _downlink_msg(beacon_packet(task), header=headers.BEACON, priority=10, with_ack=False)
 
+def get_rtc(task):
+    """Get the RTC time"""
+    _downlink_msg(_pack(cubesat.rtc.datetime))
+
+def set_rtc(task, args):
+    """Set the RTC to the passed time"""
+    ymdhms = _unpack(args)  # year, month, day, hour, minute, second
+    cubesat.rtc.datetime = struct_time(ymdhms + [-1, -1, -1])
+
 
 """
 HELPER FUNCTIONS
@@ -198,6 +212,16 @@ def file_exists(path):
     except Exception:
         return False
 
+def _pack(data):
+    b = BytesIO()
+    msgpack.pack(data, b)
+    b.seek(0)
+    return b.read()
+
+def _unpack(data):
+    b = BytesIO(data)
+    return msgpack.unpack(b)
+
 
 commands = {
     NO_OP: {"function": noop, "name":  "NO_OP", "will_respond": False, "has_args": False},
@@ -212,6 +236,8 @@ commands = {
     DELETE_FILE: {"function": delete_file, "name": "DELETE_FILE", "will_respond": True, "has_args": True},
     RELOAD: {"function": reload, "name": "RELOAD", "will_respond": True, "has_args": False},
     REQUEST_BEACON: {"function": request_beacon, "name": "REQUEST_BEACON", "will_respond": True, "has_args": False},
+    GET_RTC: {"function": get_rtc, "name": "GET_RTC", "will_respond": True, "has_args": False},
+    SET_RTC: {"function": set_rtc, "name": "SET_RTC", "will_respond": True, "has_args": True},
 }
 
 super_secret_code = b'p\xba\xb8C'
