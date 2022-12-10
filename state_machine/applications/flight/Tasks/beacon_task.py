@@ -15,18 +15,24 @@ class task(Task):
         """
         currTime = time.time()
         TIMEINTERVAL = 1000
+        log_directory = "/sd/beaconlogs/"
+        current_file = f"{log_directory}/log{int(currTime//TIMEINTERVAL)}.txt"
 
         try:
             beacon_packet = logs.beacon_packet(self)
-            file = open(f"/sd/logs/log{int(currTime//TIMEINTERVAL)}.txt", "ab+")
+            file = open(current_file, "ab+")
             file.write(bytearray(beacon_packet))
             file.close()
         except Exception:
             try:
-                os.mkdir('/sd/logs/')
+                # This line to be removed when testing on hardware which already has the sd directory
+                # leave this file in when testing on emulation
+                os.mkdir('/sd')
+
+                os.mkdir(log_directory)
                 # make sure to still log file when making the directory or else we lose the first beacon_packet of data
                 beacon_packet = logs.beacon_packet(self)
-                file = open(f"/sd/logs/log{int(currTime//TIMEINTERVAL)}.txt", "ab+")
+                file = open(current_file, "ab+")
                 file.write(bytearray(beacon_packet))
                 file.close()
             except Exception as e:
