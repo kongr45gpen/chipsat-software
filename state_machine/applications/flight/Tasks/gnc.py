@@ -1,4 +1,4 @@
-from Tasks.log import Task
+from Tasks.log import LogTask as Task
 from lib.control import bcross
 from pycubed import cubesat
 import time

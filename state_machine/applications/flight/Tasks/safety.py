@@ -1,4 +1,4 @@
-from Tasks.log import Task
+from Tasks.log import LogTask as Task
 from pycubed import cubesat
 from state_machine import state_machine
 

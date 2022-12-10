@@ -6,7 +6,7 @@ import traceback
 log_fd = None
 log_fd_str = None
 
-class Task(Task):
+class LogTask(Task):
 
     def debug(self, msg, level=1, log=False):
         """
