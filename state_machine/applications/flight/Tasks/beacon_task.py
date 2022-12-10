@@ -15,8 +15,8 @@ class task(Task):
         """
         currTime = time.time()
         TIMEINTERVAL = 1000
-        log_directory = "/sd/beaconlogs/"
-        current_file = f"{log_directory}/log{int(currTime//TIMEINTERVAL)}.txt"
+        log_directory = "/sd/beacon_logs/"
+        current_file = f"{log_directory}/beacon_log{int(currTime//TIMEINTERVAL)}.txt"
 
         try:
             beacon_packet = logs.beacon_packet(self)
