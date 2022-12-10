@@ -24,5 +24,10 @@ class task(Task):
         except Exception:
             try:
                 os.mkdir('/sd/logs/')
+                # make sure to still log file when making the directory or else we lose the first beacon_packet of data
+                beacon_packet = logs.beacon_packet(self)
+                file = open(f"/sd/logs/log{int(currTime//TIMEINTERVAL)}.txt", "ab+")
+                file.write(bytearray(beacon_packet))
+                file.close()
             except Exception as e:
                 self.debug(e)

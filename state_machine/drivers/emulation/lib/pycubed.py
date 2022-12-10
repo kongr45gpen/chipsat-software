@@ -165,7 +165,7 @@ class _Satellite:
 
     def zero_flags(self):
         """ zero all flags in non volatile memory """
-        self.f_contact = 0
+        self.f_contact = True
         self.f_burn = 0
 
     def zero_counters(self):
