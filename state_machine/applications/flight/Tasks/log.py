@@ -2,7 +2,6 @@ from lib.template_task import Task
 from pycubed import cubesat
 import logs
 import traceback
-import os
 
 log_fd = None
 log_fd_str = None
