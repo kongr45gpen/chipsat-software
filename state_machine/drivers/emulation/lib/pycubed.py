@@ -77,6 +77,7 @@ class _Satellite:
         self._gyro = array([0.0, 0.0, 0.0])
         self._torque = [0, 0, 0]
         self._cpu_temp = 30
+        self._imu_temperature = 20
 
         # debug utilities
         self.sim = False
@@ -105,12 +106,12 @@ class _Satellite:
     def temperature_imu(self):
         """ return the thermometer reading from the IMU """
         reader.read(self)
-        return 20  # Celsius
+        return self._imu_temperature
 
     @property
     def temperature_cpu(self):
         """ return the temperature reading from the CPU in celsius """
-        return 50  # Celsius
+        return self._cpu_temp
 
     @property
     def RGB(self):
