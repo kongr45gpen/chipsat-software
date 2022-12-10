@@ -24,7 +24,7 @@ class Task(Task):
         msg = super().debug(msg, level)
         if cubesat.sdcard and log:
             try:
-                self.log()
+                self.log(msg)
             except Exception as e:
                 # shouldn't call self.debug to prevent never ending loop
                 print(f'Error logging to file: {e}')
@@ -44,8 +44,8 @@ class Task(Task):
             try:
                 log_fd = open(new_log_fd_str, 'a')
             except Exception:
-                os.mkdir('/sd/logs/')
-                os.mkdir('/sd/logs/debug')
+                logs.try_mkdir('/sd/logs/')
+                logs.try_mkdir('/sd/logs/debug/')
                 log_fd = open(new_log_fd_str, 'a')
             log_fd_str = new_log_fd_str
 

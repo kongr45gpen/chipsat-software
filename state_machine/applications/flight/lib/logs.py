@@ -1,6 +1,7 @@
 from pycubed import cubesat
 from state_machine import state_machine
 import struct
+import os
 
 def beacon_packet(task):
     """Creates a beacon packet containing the: CPU temp, IMU temp, gyro, acceleration, magnetic, and state byte.
@@ -32,3 +33,11 @@ def human_time_stamp():
     Gets the time from the RTC."""
     t = cubesat.rtc.datetime
     return f'{t.tm_year}.{t.tm_mon}.{t.tm_mday}.{t.tm_hour}:{t.tm_min}:{t.tm_sec}'
+
+def try_mkdir(path):
+    """Tries to make a directory at the given path.
+    If the directory already exists it does nothing."""
+    try:
+        os.mkdir(path)
+    except Exception:
+        pass
