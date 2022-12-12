@@ -49,8 +49,8 @@ def unpack_beacon(bytes):
     mag = array([mag0, mag1, mag2])
 
     return {"state_index": state_byte,
-            "contact_flag": (flags & (0b1 << 1)) >> 1,
-            "burn_flag": (flags & (0b1 << 0)) >> 0,
+            "contact_flag": bool(flags & (0b1 << 1)),
+            "burn_flag": bool(flags & (0b1 << 0)),
             "software_error_count": state_error,
             "boot_count": boot_count,
             "battery_voltage": vbatt,

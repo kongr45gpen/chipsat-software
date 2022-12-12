@@ -22,8 +22,8 @@ class TestLogs(unittest.TestCase):
         imu_temp_in = 22
 
         boot_count_in = 453
-        f_contact_in = 1
-        f_burn_in = 0
+        f_contact_in = True
+        f_burn_in = False
         error_count_in = 13
         vbatt_in = 3.45
 
