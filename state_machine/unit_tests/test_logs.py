@@ -1,8 +1,6 @@
 import unittest
 import sys
 from numpy import testing, array
-from state_machine import state_machine
-from lib.template_task import Task
 
 sys.path.insert(0, './state_machine/drivers/emulation')
 sys.path.insert(0, './state_machine/drivers/emulation/lib')
@@ -11,6 +9,7 @@ sys.path.insert(0, './state_machine/frame')
 
 from lib.logs import beacon_packet, unpack_beacon
 from pycubed import cubesat
+from state_machine import state_machine
 
 class TestLogs(unittest.TestCase):
 
