@@ -25,8 +25,7 @@ class task(Task):
             file.close()
         except Exception:
             try:
-                # This line to be removed when testing on hardware which already has the sd directory
-                # leave this file in when testing on emulation
+                # uncomment the following line when building for emulator
                 # os.mkdir('/sd')
 
                 os.mkdir(log_directory)
