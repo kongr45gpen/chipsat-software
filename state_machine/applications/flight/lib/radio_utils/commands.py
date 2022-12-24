@@ -17,7 +17,6 @@ import supervisor
 from logs import beacon_packet
 import msgpack
 from io import BytesIO
-from time import struct_time
 
 NO_OP = b'\x00\x00'
 HARD_RESET = b'\x00\x01'
@@ -33,6 +32,7 @@ RELOAD = b'\x00\x11'
 REQUEST_BEACON = b'\x00\x12'
 GET_RTC = b'\x00\x13'
 SET_RTC = b'\x00\x14'
+get_rtc_utime = b'\x00\x15'
 
 def noop(self):
     """No operation"""
@@ -246,7 +246,8 @@ commands = {
     RELOAD: {"function": reload, "name": "RELOAD", "will_respond": True, "has_args": False},
     REQUEST_BEACON: {"function": request_beacon, "name": "REQUEST_BEACON", "will_respond": True, "has_args": False},
     GET_RTC: {"function": get_rtc, "name": "GET_RTC", "will_respond": True, "has_args": False},
-    SET_RTC: {"function": set_rtc, "name": "SET_RTC", "will_respond": True, "has_args": True},
+    SET_RTC: {"function": set_rtc_utime, "name": "SET_RTC", "will_respond": True, "has_args": True},
+    GET_RTC_UTIME: {"function": get_rtc_utime, "name": "GET_RTC_UTIME", "will_respond": True, "has_args": False},
 }
 
 super_secret_code = b'p\xba\xb8C'
