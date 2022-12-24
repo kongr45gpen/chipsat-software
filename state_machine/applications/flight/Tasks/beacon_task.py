@@ -13,26 +13,22 @@ class task(Task):
         """
         Pushes a beacon packet onto the transmission queue.
         """
+        if not self.sdcard:
+            return
+
+        try:
+            self.write_beacon()
+        except Exception:
+            os.mkdir('/sd/logs/')
+            os.mkdir('/sd/logs/beacon/')
+            self.write_beacon()
+
+    def write_beacon(self):
         currTime = time.time()
         TIMEINTERVAL = 1000
         log_directory = "/sd/logs/"
-        current_file = f"{log_directory}/beacon_log{int(currTime//TIMEINTERVAL)}.txt"
-
-        try:
-            beacon_packet = logs.beacon_packet(self)
-            file = open(current_file, "ab+")
-            file.write(bytearray(beacon_packet))
-            file.close()
-        except Exception:
-            try:
-                # uncomment the following line when building for emulator
-                # os.mkdir('/sd')
-
-                os.mkdir(log_directory)
-                # make sure to still log file when making the directory or else we lose the first beacon_packet of data
-                beacon_packet = logs.beacon_packet(self)
-                file = open(current_file, "ab+")
-                file.write(bytearray(beacon_packet))
-                file.close()
-            except Exception as e:
-                self.debug(e)
+        current_file = f"{log_directory}/beacon_log/{int(currTime//TIMEINTERVAL)}.txt"
+        beacon_packet = logs.beacon_packet(self)
+        file = open(current_file, "ab+")
+        file.write(bytearray(beacon_packet))
+        file.close()
