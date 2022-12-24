@@ -163,10 +163,19 @@ def get_rtc(task):
     """Get the RTC time"""
     _downlink_msg(_pack(cubesat.rtc.datetime))
 
-def set_rtc(task, args):
-    """Set the RTC to the passed time"""
-    ymdhms = _unpack(args)  # year, month, day, hour, minute, second
-    cubesat.rtc.datetime = struct_time(ymdhms + [-1, -1, -1])
+def get_rtc_utime(task):
+    """Get the RTC time as a unix timestamp"""
+    _downlink_msg(_pack(time.mktime(cubesat.rtc.datetime)))
+
+def set_rtc_utime(task, args):
+    """Set the RTC to the passed time
+
+    :param task: The task that called this function
+    :param args: The *unix time* to set the RTC to"""
+    utime = _unpack(args)  # year, month, day, hour, minute, second
+    t = time.localtime(utime)
+    task.debug(f'Setting RTC to {t}')
+    cubesat.rtc.datetime = t
 
 
 """
