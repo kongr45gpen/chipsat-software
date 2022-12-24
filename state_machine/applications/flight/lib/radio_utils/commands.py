@@ -32,7 +32,7 @@ RELOAD = b'\x00\x11'
 REQUEST_BEACON = b'\x00\x12'
 GET_RTC = b'\x00\x13'
 SET_RTC = b'\x00\x14'
-get_rtc_utime = b'\x00\x15'
+GET_RTC_UTIME = b'\x00\x15'
 
 def noop(self):
     """No operation"""
