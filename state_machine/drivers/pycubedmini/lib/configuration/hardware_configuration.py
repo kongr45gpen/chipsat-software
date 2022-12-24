@@ -67,12 +67,12 @@ elif HARDWARE_VERSION == "B1/02":
     COIL_Y_ADDRESS = 0x62
 
     COIL_Z_I2C = 1
-    COIL_Z_ADDRESS = 0x68
+    COIL_Z_ADDRESS = 0x69
 
     RTC_I2C = 2
 
     IMU_I2C = 1
-    IMU_ADDRESS = 0x69
+    IMU_ADDRESS = 0x68
 
     R_IMU2BODY = array([[-1., 0., 0.], [0., 0., 1.], [0., 1., 0.]])
 
