@@ -78,8 +78,8 @@ class _Satellite:
     data_cache = {}
 
     # Satellite attributes
-    LOW_VOLTAGE = 3.0
     # Max opperating temp on specsheet for ATSAMD51J19A (Celsius)
+    LOW_VOLTAGE = 3.6  # needs to be higher than harvester IC VBAT_OK ON threshold
     HIGH_TEMP = 125
     # Min opperating temp on specsheet for ATSAMD51J19A (Celsius)
     LOW_TEMP = -40
