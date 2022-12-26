@@ -13,6 +13,8 @@ class task(Task):
         self.debug(f'Voltage: {vbatt:.2f}V | Temp: {temp:.2f}°C', log=True)
 
     def safe_mode(self, vbatt, temp):
+        # Needs to be done here, and not in transition function due to #306
+        cubesat.enable_low_power()
         # margins added to prevent jittering between states
         if vbatt < cubesat.LOW_VOLTAGE + 0.1:
             self.debug(f'Voltage too low ({vbatt:.2f}V < {cubesat.LOW_VOLTAGE + 0.1:.2f}V)', log=True)
