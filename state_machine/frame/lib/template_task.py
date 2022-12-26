@@ -30,9 +30,11 @@ class Task:
         """
         if level == 1:
             header = f"[{co(msg=self.name,color=self.color)}/{state_machine.state}]"
-            print(f"{header:>35} {msg}")
+            msg = f"{header:>35} {msg}"
         else:
-            print("\t" + f"{'   └── '}{msg}")
+            msg = "\t" + f"{'   └── '}{msg}"
+        print(msg)
+        return msg
 
     async def main_task(self, *args, **kwargs):
         """
