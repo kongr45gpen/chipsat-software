@@ -31,7 +31,7 @@ DELETE_FILE = b'\x00\x10'
 RELOAD = b'\x00\x11'
 REQUEST_BEACON = b'\x00\x12'
 GET_RTC = b'\x00\x13'
-SET_RTC = b'\x00\x14'
+SET_RTC_UTIME = b'\x00\x14'
 GET_RTC_UTIME = b'\x00\x15'
 
 def noop(self):
@@ -246,7 +246,7 @@ commands = {
     RELOAD: {"function": reload, "name": "RELOAD", "will_respond": True, "has_args": False},
     REQUEST_BEACON: {"function": request_beacon, "name": "REQUEST_BEACON", "will_respond": True, "has_args": False},
     GET_RTC: {"function": get_rtc, "name": "GET_RTC", "will_respond": True, "has_args": False},
-    SET_RTC: {"function": set_rtc_utime, "name": "SET_RTC", "will_respond": True, "has_args": True},
+    SET_RTC_UTIME: {"function": set_rtc_utime, "name": "SET_RTC_UTIME", "will_respond": True, "has_args": True},
     GET_RTC_UTIME: {"function": get_rtc_utime, "name": "GET_RTC_UTIME", "will_respond": True, "has_args": False},
 }
 
