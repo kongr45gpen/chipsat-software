@@ -492,6 +492,37 @@ class _Satellite:
         self.c_downlink = 0
         self.c_logfail = 0
 
+    def enable_low_power(self):
+        """ set all devices into lowest available power modes """
+        self.burn(0.0, 0)
+        self.drv_x.throttle_volts = None
+        self.drv_y.throttle_volts = None
+        self.drv_z.throttle_volts = None
+        self.imu.accel_powermode = BMX160_ACCEL_SUSPEND_MODE
+        self.imu.gyro_powermode = BMX160_GYRO_SUSPEND_MODE
+        self.imu.mag_powermode = BMX160_MAG_SUSPEND_MODE
+        self.radio.sleep()
+        self.RGB = (0, 0, 0)
+        self.sun_xn.enabled = False
+        self.sun_yn.enabled = False
+        self.sun_zn.enabled = False
+        self.sun_xp.enabled = False
+        self.sun_yp.enabled = False
+        self.sun_zp.enabled = False
+
+    def disable_low_power(self):
+        """ set all devices into normal power modes """
+        self.imu.accel_powermode = BMX160_ACCEL_NORMAL_MODE
+        self.imu.gyro_powermode = BMX160_GYRO_NORMAL_MODE
+        self.imu.mag_powermode = BMX160_MAG_NORMAL_MODE
+        self.radio.idle()
+        self.sun_xn.enabled = True
+        self.sun_yn.enabled = True
+        self.sun_zn.enabled = True
+        self.sun_xp.enabled = True
+        self.sun_yp.enabled = True
+        self.sun_zp.enabled = True
+
 
 # initialize Satellite as cubesat
 cubesat = _Satellite()
