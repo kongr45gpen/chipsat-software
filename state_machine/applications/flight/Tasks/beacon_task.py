@@ -1,8 +1,9 @@
 # Transmit "Hello World" beacon
 
-from lib.template_task import Task
+from Tasks.log import LogTask as Task
+from pycubed import cubesat
+import files
 import time
-import os
 import logs
 
 class task(Task):
@@ -13,16 +14,21 @@ class task(Task):
         """
         Pushes a beacon packet onto the transmission queue.
         """
-        currTime = time.time()
-        TIMEINTERVAL = 1000
+        if not cubesat.sdcard:
+            return
 
         try:
-            beacon_packet = logs.beacon_packet(self)
-            file = open(f"/sd/logs/log{int(currTime//TIMEINTERVAL)}.txt", "ab+")
-            file.write(bytearray(beacon_packet))
-            file.close()
+            self.write_beacon()
         except Exception:
-            try:
-                os.mkdir('/sd/logs/')
-            except Exception as e:
-                self.debug(e)
+            files.mkdirp('/sd/logs/beacon/')
+            self.write_beacon()
+
+    def write_beacon(self):
+        currTime = time.time()
+        TIMEINTERVAL = 1000
+        log_directory = "/sd/logs/"
+        current_file = f"{log_directory}beacon/{int(currTime//TIMEINTERVAL)}.txt"
+        beacon_packet = logs.beacon_packet(self)
+        file = open(current_file, "ab+")
+        file.write(bytearray(beacon_packet))
+        file.close()

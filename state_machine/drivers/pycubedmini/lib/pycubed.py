@@ -78,10 +78,10 @@ class _Satellite:
     data_cache = {}
 
     # Satellite attributes
-    LOW_VOLTAGE = 3.0
-    # Max opperating temp on specsheet for ATSAMD51J19A (Celsius)
+    LOW_VOLTAGE = 3.6  # needs to be higher than harvester IC VBAT_OK ON threshold
+    # Max operating temp on specsheet for ATSAMD51J19A (Celsius)
     HIGH_TEMP = 125
-    # Min opperating temp on specsheet for ATSAMD51J19A (Celsius)
+    # Min operating temp on specsheet for ATSAMD51J19A (Celsius)
     LOW_TEMP = -40
 
     def __new__(cls):
@@ -202,8 +202,8 @@ class _Satellite:
                 self.i2c(hw_config.IMU_I2C),
                 address=hw_config.IMU_ADDRESS)
         except Exception as e:
-            print(f'[ERROR][Initializing IMU] {e},' +
-                  f'\n\tis HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+            print(f'[ERROR][Initializing IMU] {e}, ' +
+                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
 
     @device
     def radio(self):
@@ -253,8 +253,8 @@ class _Satellite:
                 self.i2c(hw_config.SUN_YN_I2C),
                 address=hw_config.SUN_YN_ADDRESS)
         except Exception as e:
-            print(f'[ERROR][Initializing Sun Sensor -Y] {e},' +
-                  f'\n\tis HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+            print(f'[ERROR][Initializing Sun Sensor -Y] {e}, ' +
+                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
 
     @device
     def sun_zn(self):
@@ -264,8 +264,8 @@ class _Satellite:
                 self.i2c(hw_config.SUN_ZN_I2C),
                 address=hw_config.SUN_ZN_ADDRESS)
         except Exception as e:
-            print(f'[ERROR][Initializing Sun Sensor -Z] {e},' +
-                  f'\n\tis HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+            print(f'[ERROR][Initializing Sun Sensor -Z] {e}, ' +
+                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
 
     @device
     def sun_xn(self):
@@ -275,8 +275,8 @@ class _Satellite:
                 self.i2c(hw_config.SUN_XN_I2C),
                 address=hw_config.SUN_XN_ADDRESS)
         except Exception as e:
-            print(f'[ERROR][Initializing Sun Sensor -X] {e},' +
-                  f'\n\tis HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+            print(f'[ERROR][Initializing Sun Sensor -X] {e}, ' +
+                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
 
     @device
     def sun_yp(self):
@@ -286,8 +286,8 @@ class _Satellite:
                 self.i2c(hw_config.SUN_YP_I2C),
                 address=hw_config.SUN_YP_ADDRESS)
         except Exception as e:
-            print(f'[ERROR][Initializing Sun Sensor +Y] {e},' +
-                  f'\n\tis HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+            print(f'[ERROR][Initializing Sun Sensor +Y] {e}, ' +
+                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
 
     @device
     def sun_zp(self):
@@ -297,8 +297,8 @@ class _Satellite:
                 self.i2c(hw_config.SUN_ZP_I2C),
                 address=hw_config.SUN_ZP_ADDRESS)
         except Exception as e:
-            print(f'[ERROR][Initializing Sun Sensor +Z] {e},' +
-                  f'\n\tis HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+            print(f'[ERROR][Initializing Sun Sensor +Z] {e}, ' +
+                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
 
     @device
     def sun_xp(self):
@@ -308,8 +308,8 @@ class _Satellite:
                 self.i2c(hw_config.SUN_XP_I2C),
                 address=hw_config.SUN_XP_ADDRESS)
         except Exception as e:
-            print(f'[ERROR][Initializing Sun Sensor +X] {e},' +
-                  f'\n\tis HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+            print(f'[ERROR][Initializing Sun Sensor +X] {e}, ' +
+                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
 
     @device
     def drv_x(self):
@@ -319,8 +319,8 @@ class _Satellite:
                 self.i2c(hw_config.COIL_X_I2C),
                 hw_config.COIL_X_ADDRESS)
         except Exception as e:
-            print(f'[ERROR][Initializing Coil X H-Bridge] {e},' +
-                  f'\n\tis HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+            print(f'[ERROR][Initializing Coil X H-Bridge] {e}, ' +
+                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
 
     @device
     def drv_y(self):
@@ -330,8 +330,8 @@ class _Satellite:
                 self.i2c(hw_config.COIL_Y_I2C),
                 hw_config.COIL_Y_ADDRESS)
         except Exception as e:
-            print(f'[ERROR][Initializing Coil Y H-Bridge] {e},' +
-                  f'\n\tis HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+            print(f'[ERROR][Initializing Coil Y H-Bridge] {e}, ' +
+                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
 
     @device
     def drv_z(self):
@@ -341,8 +341,8 @@ class _Satellite:
                 self.i2c(hw_config.COIL_Z_I2C),
                 hw_config.COIL_Z_ADDRESS)
         except Exception as e:
-            print(f'[ERROR][Initializing Coil Z H-Bridge] {e},' +
-                  f'\n\tis HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+            print(f'[ERROR][Initializing Coil Z H-Bridge] {e}, ' +
+                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
 
     @device
     def burnwire1(self):
@@ -361,8 +361,8 @@ class _Satellite:
         try:
             return PCF8523(self.i2c(hw_config.RTC_I2C))
         except Exception as e:
-            print(f'[ERROR][Initializing RTC] {e},' +
-                  f'\n\tis HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+            print(f'[ERROR][Initializing RTC] {e}, ' +
+                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
 
     def imuToBodyFrame(self, vec):
         return dot(hw_config.R_IMU2BODY, array(vec))
@@ -491,6 +491,64 @@ class _Satellite:
         self.c_deploy = 0
         self.c_downlink = 0
         self.c_logfail = 0
+
+    def enable_low_power(self):
+        """ set all devices into lowest available power modes """
+        self.burn(0.0, 0)
+
+        if self.drv_x:
+            self.drv_x.throttle_volts = None
+        if self.drv_y:
+            self.drv_y.throttle_volts = None
+        if self.drv_z:
+            self.drv_z.throttle_volts = None
+
+        if self.imu:
+            self.imu.accel_powermode = bmx160.BMX160_ACCEL_SUSPEND_MODE
+            self.imu.gyro_powermode = bmx160.BMX160_GYRO_SUSPEND_MODE
+            self.imu.mag_powermode = bmx160.BMX160_MAG_SUSPEND_MODE
+
+        if self.radio:
+            self.radio.sleep()
+
+        self.RGB = (0, 0, 0)
+
+        if self.sun_xn:
+            self.sun_xn.enabled = False
+        if self.sun_yn:
+            self.sun_yn.enabled = False
+        if self.sun_zn:
+            self.sun_zn.enabled = False
+        if self.sun_xp:
+            self.sun_xp.enabled = False
+        if self.sun_yp:
+            self.sun_yp.enabled = False
+        if self.sun_zp:
+            self.sun_zp.enabled = False
+
+    def disable_low_power(self):
+        """ set all devices into normal power modes """
+        # error occurs if gyro goes into normal mode before mag/accel
+        if self.imu:
+            self.imu.accel_powermode = bmx160.BMX160_ACCEL_NORMAL_MODE
+            self.imu.mag_powermode = bmx160.BMX160_MAG_NORMAL_MODE
+            self.imu.gyro_powermode = bmx160.BMX160_GYRO_NORMAL_MODE
+
+        if self.radio:
+            self.radio.idle()
+
+        if self.sun_xn:
+            self.sun_xn.enabled = True
+        if self.sun_yn:
+            self.sun_yn.enabled = True
+        if self.sun_zn:
+            self.sun_zn.enabled = True
+        if self.sun_xp:
+            self.sun_xp.enabled = True
+        if self.sun_yp:
+            self.sun_yp.enabled = True
+        if self.sun_zp:
+            self.sun_zp.enabled = True
 
 
 # initialize Satellite as cubesat

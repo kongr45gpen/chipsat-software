@@ -4,8 +4,10 @@ def announcer(source, destination, cubesat):
 
 
 def low_power_on(source, destination, cubesat):
-    print('We should be turning off most of the cubesat\'s power hungry devices')
+    print('Turning off power hungry devices')
+    cubesat.enable_low_power()
 
 
 def low_power_off(source, destination, cubesat):
-    print('We should be returning to normal opperations')
+    print('Setting devices back to normal power modes')
+    cubesat.disable_low_power()

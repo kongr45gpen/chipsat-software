@@ -34,6 +34,10 @@ GET_RTC = b'\x00\x13'
 SET_RTC_UTIME = b'\x00\x14'
 GET_RTC_UTIME = b'\x00\x15'
 
+
+COMMAND_ERROR_PRIORITY = 9
+BEACON_PRIORITY = 10
+
 def noop(self):
     """No operation"""
     self.debug('no-op')
@@ -69,7 +73,7 @@ def request_file(task, file):
     :type file: str"""
     file = str(file, 'utf-8')
     if file_exists(file):
-        tq.push(DiskBufferedMessage(1, file))
+        tq.push(DiskBufferedMessage(file))
     else:
         task.debug(f'File not found: {file}')
         tq.push(Message(9, b'File not found', with_ack=True))
@@ -107,7 +111,7 @@ def move_file(task, args):
         tq.push(Message(9, b'Success moving file'))
     except Exception as e:
         task.debug(f'Error moving file: {e}')
-        _downlink(f'Error moving file: {e}', priority=9)
+        _downlink(f'Error moving file: {e}')
 
 def copy_file(task, args):
     """
@@ -125,7 +129,7 @@ def copy_file(task, args):
         tq.push(Message(9, b'Success copying file'))
     except Exception as e:
         task.debug(f'Error moving file: {e}')
-        _downlink(f'Error moving file: {e}', priority=9)
+        _downlink(f'Error moving file: {e}')
 
 def delete_file(task, file):
     """Delete file
@@ -139,7 +143,7 @@ def delete_file(task, file):
         tq.push(Message(9, b'Success deleting file'))
     except Exception as e:
         task.debug(f'Error deleting file: {e}')
-        _downlink(f'Error deleting file: {e}', priority=9)
+        _downlink(f'Error deleting file: {e}')
 
 async def reload(task):
     """Reloads the flight software
@@ -157,7 +161,7 @@ def request_beacon(task):
 
     :param task: The task that called this function
     """
-    _downlink_msg(beacon_packet(task), header=headers.BEACON, priority=10, with_ack=False)
+    _downlink_msg(beacon_packet(task), header=headers.BEACON, priority=BEACON_PRIORITY, with_ack=False)
 
 def get_rtc(task):
     """Get the RTC time"""
@@ -186,13 +190,13 @@ def _downlink_msg(data, priority=1, header=0x00, with_ack=True):
     assert (len(data) <= radio_utils.MAX_PACKET_LEN)
     tq.push(Message(priority, data, header=header, with_ack=with_ack))
 
-def _downlink(data, priority=1):
+def _downlink(data):
     """Write data to a file, and then create a new DiskBufferedMessage to downlink it"""
     if not (cubesat.sdcard and cubesat.vfs):
         if len(data) < 1024:  # 1kb limit for downlink
-            tq.push(MemoryBufferedMessage(priority, data))
+            tq.push(MemoryBufferedMessage(data))
         else:
-            tq.push(Message(priority, b'Downlink too large (sd missing)'))
+            tq.push(Message(COMMAND_ERROR_PRIORITY, b'Downlink too large (sd missing)'))
         return
     fname = f'/sd/downlink/{time.monotonic_ns()}.txt'
     if not file_exists('/sd/downlink'):
@@ -200,7 +204,7 @@ def _downlink(data, priority=1):
     f = open(fname, 'w')
     f.write(data)
     f.close()
-    tq.push(DiskBufferedMessage(priority, fname))
+    tq.push(DiskBufferedMessage(fname))
 
 def _cp(source, dest, buffer_size=1024):
     """

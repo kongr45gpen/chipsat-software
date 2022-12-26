@@ -4,6 +4,7 @@ import tasko
 import lib.reader as reader
 from lib.bitflags import bitFlag, multiBitFlag, multiByte
 from lib.radio_driver import Radio
+from sd import SD
 import random
 try:
     from ulab.numpy import array
@@ -60,6 +61,7 @@ class _Satellite:
     LOW_VOLTAGE = 4.0
 
     def __init__(self):
+        self.f_contact = True
         self.task = None
         self.scheduled_tasks = {}
 
@@ -75,10 +77,12 @@ class _Satellite:
         self._gyro = array([0.0, 0.0, 0.0])
         self._torque = [0, 0, 0]
         self._cpu_temp = 30
+        self._imu_temperature = 20
 
         # debug utilities
         self.sim = False
         self.randomize_voltage = False
+        self.sdcard = SD()
 
     @property
     def acceleration(self):
@@ -102,12 +106,12 @@ class _Satellite:
     def temperature_imu(self):
         """ return the thermometer reading from the IMU """
         reader.read(self)
-        return 20  # Celsius
+        return self._imu_temperature
 
     @property
     def temperature_cpu(self):
         """ return the temperature reading from the CPU in celsius """
-        return 50  # Celsius
+        return self._cpu_temp
 
     @property
     def RGB(self):
@@ -176,6 +180,14 @@ class _Satellite:
         self.c_deploy = 0
         self.c_downlink = 0
         self.c_logfail = 0
+
+    def enable_low_power(self):
+        """ set all devices into lowest available power modes """
+        pass
+
+    def disable_low_power(self):
+        """ set all devices into normal power modes """
+        pass
 
 
 cubesat = _Satellite()
