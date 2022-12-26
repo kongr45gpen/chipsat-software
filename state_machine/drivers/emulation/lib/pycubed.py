@@ -142,6 +142,10 @@ class _Satellite:
         return True
 
     @property
+    def micro(self):
+        return True
+
+    @property
     def neopixel(self):
         return True
 
