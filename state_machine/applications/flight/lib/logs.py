@@ -1,8 +1,8 @@
 import struct
 try:
-    from ulab.numpy import array
+    from ulab.numpy import array, nan
 except ImportError:
-    from numpy import array
+    from numpy import array, nan
 from pycubed import cubesat
 from state_machine import state_machine
 
@@ -22,12 +22,12 @@ def beacon_packet():
     state_error = cubesat.c_state_err
     boot_count = cubesat.c_boot
     vbatt = cubesat.battery_voltage
-    cpu_temp = cubesat.temperature_cpu
-    imu_temp = cubesat.temperature_imu
-    gyro = cubesat.gyro
-    mag = cubesat.magnetic
-    rssi = cubesat.radio.last_rssi
-    fei = cubesat.radio.frequency_error
+    cpu_temp = cubesat.temperature_cpu if cubesat.micro else nan
+    imu_temp = cubesat.temperature_imu if cubesat.imu else nan
+    gyro = cubesat.gyro if cubesat.imu else array([nan, nan, nan])
+    mag = cubesat.magnetic if cubesat.imu else array([nan, nan, nan])
+    rssi = cubesat.radio.last_rssi if cubesat.radio else nan
+    fei = cubesat.radio.frequency_error if cubesat.radio else nan
     return struct.pack(beacon_format,
                        state_byte, flags, state_error, boot_count,
                        vbatt, cpu_temp, imu_temp,
