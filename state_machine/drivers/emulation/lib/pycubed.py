@@ -181,5 +181,13 @@ class _Satellite:
         self.c_downlink = 0
         self.c_logfail = 0
 
+    def enable_low_power(self):
+        """ set all devices into lowest available power modes """
+        pass
+
+    def disable_low_power(self):
+        """ set all devices into normal power modes """
+        pass
+
 
 cubesat = _Satellite()
