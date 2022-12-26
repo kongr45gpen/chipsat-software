@@ -10,14 +10,14 @@ class task(Task):
     timeout = 60 * 60  # 60 min
 
     def debug_status(self, vbatt, temp):
-        self.debug(f'Voltage: {vbatt:.1f}V | Temp: {temp:.1f}°C', log=True)
+        self.debug(f'Voltage: {vbatt:.2f}V | Temp: {temp:.2f}°C', log=True)
 
     def safe_mode(self, vbatt, temp):
         # margins added to prevent jittering between states
         if vbatt < cubesat.LOW_VOLTAGE + 0.1:
-            self.debug(f'Voltage too low ({vbatt:.1f}V < {cubesat.LOW_VOLTAGE + 0.1:.1f}V)', log=True)
+            self.debug(f'Voltage too low ({vbatt:.2f}V < {cubesat.LOW_VOLTAGE + 0.1:.2f}V)', log=True)
         elif temp >= cubesat.HIGH_TEMP - 1:
-            self.debug(f'Temp too high ({temp:.1f}°C >= {cubesat.HIGH_TEMP - 1:.1f}°C)', log=True)
+            self.debug(f'Temp too high ({temp:.2f}°C >= {cubesat.HIGH_TEMP - 1:.2f}°C)', log=True)
         else:
             self.debug_status(vbatt, temp)
             self.debug(
@@ -26,10 +26,10 @@ class task(Task):
 
     def other_modes(self, vbatt, temp):
         if vbatt < cubesat.LOW_VOLTAGE:
-            self.debug(f'Voltage too low ({vbatt:.1f}V < {cubesat.LOW_VOLTAGE:.1f}V) switch to safe mode', log=True)
+            self.debug(f'Voltage too low ({vbatt:.2f}V < {cubesat.LOW_VOLTAGE:.2f}V) switch to safe mode', log=True)
             state_machine.switch_to('Safe')
         elif temp > cubesat.HIGH_TEMP:
-            self.debug(f'Temp too high ({temp:.1f}°C > {cubesat.HIGH_TEMP:.1f}°C) switching to safe mode', log=True)
+            self.debug(f'Temp too high ({temp:.2f}°C > {cubesat.HIGH_TEMP:.2f}°C) switching to safe mode', log=True)
             state_machine.switch_to('Safe')
         else:
             self.debug_status(vbatt, temp)

@@ -41,7 +41,7 @@ class deployment_manager(Task):
         else:
             vbatt = cubesat.battery_voltage
             if vbatt < cubesat.LOW_VOLTAGE:
-                self.debug(f'Voltage too low ({vbatt:.1f}V < {cubesat.LOW_VOLTAGE:.1f}V) switch to safe mode')
+                self.debug(f'Voltage too low ({vbatt:.2f}V < {cubesat.LOW_VOLTAGE:.2f}V) switch to safe mode')
                 state_machine.switch_to('Safe')
 
     def should_burn(self):
