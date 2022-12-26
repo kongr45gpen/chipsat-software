@@ -495,34 +495,60 @@ class _Satellite:
     def enable_low_power(self):
         """ set all devices into lowest available power modes """
         self.burn(0.0, 0)
-        self.drv_x.throttle_volts = None
-        self.drv_y.throttle_volts = None
-        self.drv_z.throttle_volts = None
-        self.imu.accel_powermode = bmx160.BMX160_ACCEL_SUSPEND_MODE
-        self.imu.gyro_powermode = bmx160.BMX160_GYRO_SUSPEND_MODE
-        self.imu.mag_powermode = bmx160.BMX160_MAG_SUSPEND_MODE
-        self.radio.sleep()
+
+        if self.drv_x:
+            self.drv_x.throttle_volts = None
+        if self.drv_y:
+            self.drv_y.throttle_volts = None
+        if self.drv_z:
+            self.drv_z.throttle_volts = None
+
+        if self.imu:
+            self.imu.accel_powermode = bmx160.BMX160_ACCEL_SUSPEND_MODE
+            self.imu.gyro_powermode = bmx160.BMX160_GYRO_SUSPEND_MODE
+            self.imu.mag_powermode = bmx160.BMX160_MAG_SUSPEND_MODE
+
+        if self.radio:
+            self.radio.sleep()
+
         self.RGB = (0, 0, 0)
-        self.sun_xn.enabled = False
-        self.sun_yn.enabled = False
-        self.sun_zn.enabled = False
-        self.sun_xp.enabled = False
-        self.sun_yp.enabled = False
-        self.sun_zp.enabled = False
+
+        if self.sun_xn:
+            self.sun_xn.enabled = False
+        if self.sun_yn:
+            self.sun_yn.enabled = False
+        if self.sun_zn:
+            self.sun_zn.enabled = False
+        if self.sun_xp:
+            self.sun_xp.enabled = False
+        if self.sun_yp:
+            self.sun_yp.enabled = False
+        if self.sun_zp:
+            self.sun_zp.enabled = False
 
     def disable_low_power(self):
         """ set all devices into normal power modes """
         # error occurs if gyro goes into normal mode before mag/accel
-        self.imu.accel_powermode = bmx160.BMX160_ACCEL_NORMAL_MODE
-        self.imu.mag_powermode = bmx160.BMX160_MAG_NORMAL_MODE
-        self.imu.gyro_powermode = bmx160.BMX160_GYRO_NORMAL_MODE
-        self.radio.idle()
-        self.sun_xn.enabled = True
-        self.sun_yn.enabled = True
-        self.sun_zn.enabled = True
-        self.sun_xp.enabled = True
-        self.sun_yp.enabled = True
-        self.sun_zp.enabled = True
+        if self.imu:
+            self.imu.accel_powermode = bmx160.BMX160_ACCEL_NORMAL_MODE
+            self.imu.mag_powermode = bmx160.BMX160_MAG_NORMAL_MODE
+            self.imu.gyro_powermode = bmx160.BMX160_GYRO_NORMAL_MODE
+
+        if self.radio:
+            self.radio.idle()
+
+        if self.sun_xn:
+            self.sun_xn.enabled = True
+        if self.sun_yn:
+            self.sun_yn.enabled = True
+        if self.sun_zn:
+            self.sun_zn.enabled = True
+        if self.sun_xp:
+            self.sun_xp.enabled = True
+        if self.sun_yp:
+            self.sun_yp.enabled = True
+        if self.sun_zp:
+            self.sun_zp.enabled = True
 
 
 # initialize Satellite as cubesat
