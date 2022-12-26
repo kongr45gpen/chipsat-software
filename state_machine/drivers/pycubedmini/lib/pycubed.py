@@ -512,9 +512,10 @@ class _Satellite:
 
     def disable_low_power(self):
         """ set all devices into normal power modes """
+        # error occurs if gyro goes into normal mode before mag/accel
         self.imu.accel_powermode = bmx160.BMX160_ACCEL_NORMAL_MODE
-        self.imu.gyro_powermode = bmx160.BMX160_GYRO_NORMAL_MODE
         self.imu.mag_powermode = bmx160.BMX160_MAG_NORMAL_MODE
+        self.imu.gyro_powermode = bmx160.BMX160_GYRO_NORMAL_MODE
         self.radio.idle()
         self.sun_xn.enabled = True
         self.sun_yn.enabled = True
