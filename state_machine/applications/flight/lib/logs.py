@@ -7,8 +7,10 @@ except ImportError:
 from pycubed import cubesat
 from state_machine import state_machine
 
-
-beacon_format = 3 * 'B' + 'H' + 'f' * 11  # 3 uint8 + 1 uint16 + 11 float32 = 49 bytes
+# 3 uint8 + 1 uint16 + 11 float32
+# = 49 bytes of data
+# = 52 byte c struct (1 extra to align chars, 2 extra to align short)
+beacon_format = 3 * 'B' + 'H' + 'f' * 11
 
 def beacon_packet():
     """Creates a beacon packet containing the: state index byte, f_contact and f_burn flags,
