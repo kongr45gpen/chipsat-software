@@ -78,10 +78,10 @@ class _Satellite:
     data_cache = {}
 
     # Satellite attributes
-    LOW_VOLTAGE = 3.0
-    # Max opperating temp on specsheet for ATSAMD51J19A (Celsius)
+    LOW_VOLTAGE = 3.6  # needs to be higher than harvester IC VBAT_OK ON threshold
+    # Max operating temp on specsheet for ATSAMD51J19A (Celsius)
     HIGH_TEMP = 125
-    # Min opperating temp on specsheet for ATSAMD51J19A (Celsius)
+    # Min operating temp on specsheet for ATSAMD51J19A (Celsius)
     LOW_TEMP = -40
 
     def __new__(cls):
@@ -491,6 +491,64 @@ class _Satellite:
         self.c_deploy = 0
         self.c_downlink = 0
         self.c_logfail = 0
+
+    def enable_low_power(self):
+        """ set all devices into lowest available power modes """
+        self.burn(0.0, 0)
+
+        if self.drv_x:
+            self.drv_x.throttle_volts = None
+        if self.drv_y:
+            self.drv_y.throttle_volts = None
+        if self.drv_z:
+            self.drv_z.throttle_volts = None
+
+        if self.imu:
+            self.imu.accel_powermode = bmx160.BMX160_ACCEL_SUSPEND_MODE
+            self.imu.gyro_powermode = bmx160.BMX160_GYRO_SUSPEND_MODE
+            self.imu.mag_powermode = bmx160.BMX160_MAG_SUSPEND_MODE
+
+        if self.radio:
+            self.radio.sleep()
+
+        self.RGB = (0, 0, 0)
+
+        if self.sun_xn:
+            self.sun_xn.enabled = False
+        if self.sun_yn:
+            self.sun_yn.enabled = False
+        if self.sun_zn:
+            self.sun_zn.enabled = False
+        if self.sun_xp:
+            self.sun_xp.enabled = False
+        if self.sun_yp:
+            self.sun_yp.enabled = False
+        if self.sun_zp:
+            self.sun_zp.enabled = False
+
+    def disable_low_power(self):
+        """ set all devices into normal power modes """
+        # error occurs if gyro goes into normal mode before mag/accel
+        if self.imu:
+            self.imu.accel_powermode = bmx160.BMX160_ACCEL_NORMAL_MODE
+            self.imu.mag_powermode = bmx160.BMX160_MAG_NORMAL_MODE
+            self.imu.gyro_powermode = bmx160.BMX160_GYRO_NORMAL_MODE
+
+        if self.radio:
+            self.radio.idle()
+
+        if self.sun_xn:
+            self.sun_xn.enabled = True
+        if self.sun_yn:
+            self.sun_yn.enabled = True
+        if self.sun_zn:
+            self.sun_zn.enabled = True
+        if self.sun_xp:
+            self.sun_xp.enabled = True
+        if self.sun_yp:
+            self.sun_yp.enabled = True
+        if self.sun_zp:
+            self.sun_zp.enabled = True
 
 
 # initialize Satellite as cubesat
