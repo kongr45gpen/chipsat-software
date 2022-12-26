@@ -17,7 +17,7 @@ class task(Task):
         TIMEINTERVAL = 1000
 
         try:
-            beacon_packet = logs.beacon_packet(self)
+            beacon_packet = logs.beacon_packet()
             file = open(f"/sd/logs/log{int(currTime//TIMEINTERVAL)}.txt", "ab+")
             file.write(bytearray(beacon_packet))
             file.close()
