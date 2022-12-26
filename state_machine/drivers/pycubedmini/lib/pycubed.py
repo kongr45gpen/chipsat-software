@@ -498,9 +498,9 @@ class _Satellite:
         self.drv_x.throttle_volts = None
         self.drv_y.throttle_volts = None
         self.drv_z.throttle_volts = None
-        self.imu.accel_powermode = BMX160_ACCEL_SUSPEND_MODE
-        self.imu.gyro_powermode = BMX160_GYRO_SUSPEND_MODE
-        self.imu.mag_powermode = BMX160_MAG_SUSPEND_MODE
+        self.imu.accel_powermode = bmx160.BMX160_ACCEL_SUSPEND_MODE
+        self.imu.gyro_powermode = bmx160.BMX160_GYRO_SUSPEND_MODE
+        self.imu.mag_powermode = bmx160.BMX160_MAG_SUSPEND_MODE
         self.radio.sleep()
         self.RGB = (0, 0, 0)
         self.sun_xn.enabled = False
@@ -512,9 +512,9 @@ class _Satellite:
 
     def disable_low_power(self):
         """ set all devices into normal power modes """
-        self.imu.accel_powermode = BMX160_ACCEL_NORMAL_MODE
-        self.imu.gyro_powermode = BMX160_GYRO_NORMAL_MODE
-        self.imu.mag_powermode = BMX160_MAG_NORMAL_MODE
+        self.imu.accel_powermode = bmx160.BMX160_ACCEL_NORMAL_MODE
+        self.imu.gyro_powermode = bmx160.BMX160_GYRO_NORMAL_MODE
+        self.imu.mag_powermode = bmx160.BMX160_MAG_NORMAL_MODE
         self.radio.idle()
         self.sun_xn.enabled = True
         self.sun_yn.enabled = True
