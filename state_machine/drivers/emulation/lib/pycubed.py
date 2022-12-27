@@ -2,7 +2,7 @@ import time
 import tasko
 
 import lib.reader as reader
-from lib.bitflags import bitFlag, multiBitFlag, multiByte, nvm
+from lib.bitflags import bitFlag, multiByte, nvm
 from lib.radio_driver import Radio
 from lib.sd import SD
 import random

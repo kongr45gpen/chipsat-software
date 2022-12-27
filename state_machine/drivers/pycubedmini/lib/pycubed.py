@@ -16,8 +16,7 @@ import pwmio
 import bmx160
 import drv8830
 from adafruit_pcf8523 import PCF8523
-from bitflags import bitFlag, multiBitFlag, multiByte
-from micropython import const
+from bitflags import bitFlag, multiByte
 import configuration.hardware_configuration as hw_config
 import configuration.radio_configuration as rf_config
 import adafruit_tsl2561
