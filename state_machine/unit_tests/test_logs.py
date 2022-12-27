@@ -36,7 +36,7 @@ class TestLogs(unittest.TestCase):
 
         cubesat.f_contact = f_contact_in
         cubesat.f_burn = f_burn_in
-        cubesat.c_state_err = error_count_in
+        cubesat.c_software_error = error_count_in
 
         cubesat.c_boot = boot_count_in
         cubesat.LOW_VOLTAGE = vbatt_in
