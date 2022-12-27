@@ -1,5 +1,5 @@
 from Tasks.safety import task as safety
-from Tasks.beacon_task import task as beacon
+from Tasks.telemetry import task as telemetry
 from Tasks.blink_task import task as blink
 from Tasks.imu_task import task as imu
 from Tasks.time_task import task as time
@@ -11,7 +11,7 @@ from config import config  # noqa: F401
 
 TaskMap = {
     "Safety": safety,
-    "Beacon": beacon,
+    "Telemetry": telemetry,
     "Blink": blink,
     "IMU": imu,
     "Time": time,

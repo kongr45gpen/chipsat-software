@@ -11,7 +11,7 @@ config = {
                 "Priority": 5,
                 "ScheduleLater": False
             },
-            "Beacon": {
+            "Telemetry": {
                 "Interval": 30,
                 "Priority": 1,
                 "ScheduleLater": False
