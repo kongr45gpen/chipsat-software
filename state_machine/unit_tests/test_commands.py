@@ -37,3 +37,4 @@ class CommandTests(IsolatedAsyncioTestCase):
         await send_cmd(cmd, args)
         cdh._downlink = old_downlink
         self.assertEqual(downlink.result, expected)
+        tq.clear()
