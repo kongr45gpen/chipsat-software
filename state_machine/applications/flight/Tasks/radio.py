@@ -56,6 +56,8 @@ class task(Task):
             else:
                 await cubesat.radio.send(packet, keep_listening=True)
 
+            cubesat.c_downlink += 1
+
             if tq.peek().done():
                 tq.pop()
         else:
@@ -66,6 +68,7 @@ class task(Task):
                 with_header=False,
                 timeout=10)
             if response is not None:
+                cubesat.c_uplink += 1
                 cubesat.f_contact = True
                 header = response[0]
                 response = response[1:]  # remove the header byte

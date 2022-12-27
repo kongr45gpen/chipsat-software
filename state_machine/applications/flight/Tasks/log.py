@@ -57,5 +57,9 @@ class LogTask(Task):
         Called when an error is raised in the task.
         Logs it to the debug logs.
         """
-        formated_exception = traceback.format_exception(error, error, error.__traceback__)
-        self.debug(f'[Error] {formated_exception}', log=True)
+        try:
+            formated_exception = traceback.format_exception(error, error, error.__traceback__)
+            self.debug(f'[Error] {formated_exception}', log=True)
+            cubesat.c_software_error += 1
+        except Exception:
+            pass
