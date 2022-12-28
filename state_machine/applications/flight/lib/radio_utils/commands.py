@@ -167,7 +167,7 @@ def request_beacon(task):
 
 def get_rtc(task):
     """Get the RTC time"""
-    _downlink_msg(_pack(cubesat.rtc.datetime))
+    _downlink_msg(_pack(tuple(cubesat.rtc.datetime)))
 
 def get_rtc_utime(task):
     """Get the RTC time as a unix timestamp"""
