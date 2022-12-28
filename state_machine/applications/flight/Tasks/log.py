@@ -26,7 +26,7 @@ class LogTask(Task):
                 self.log(msg)
             except Exception as e:
                 # shouldn't call self.debug to prevent never ending loop
-                print(f'Error logging to file: {e}')
+                super().debug(f'Error logging to file: {e}', 1)
 
     def log(self, msg):
         """
