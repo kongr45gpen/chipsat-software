@@ -15,7 +15,8 @@ def should_transmit():
     """
     Return if we should transmit
     """
-    return ANTENNA_ATTACHED and not tq.empty()
+    tx_ready = ANTENNA_ATTACHED and not tq.empty()
+    return tx_ready
 
 class task(Task):
     name = 'radio'
