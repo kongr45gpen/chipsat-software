@@ -2,9 +2,9 @@ import time
 import tasko
 
 import lib.reader as reader
-from lib.bitflags import bitFlag, multiBitFlag, multiByte
+from lib.bitflags import bitFlag, multiByte, nvm
 from lib.radio_driver import Radio
-from sd import SD
+from lib.sd import SD
 import random
 try:
     from ulab.numpy import array
@@ -26,26 +26,16 @@ class HardwareInitException(Exception):
     pass
 
 
-# NVM register numbers
-_FLAG = 20
-_DWNLINK = 4
-_DCOUNT = 3
-_RSTERRS = 2
-_BOOTCNT = 0
-_LOGFAIL = 5
-
 class _Satellite:
     # Define NVM flags
-    f_contact = bitFlag(register=_FLAG, bit=1)
-    f_burn = bitFlag(register=_FLAG, bit=2)
+    f_contact = bitFlag(register=0, bit=1)
+    f_burn = bitFlag(register=0, bit=2)
 
     # Define NVM counters
-    c_boot = multiByte(num_bytes=2, lowest_register=_BOOTCNT)
-    c_state_err = multiBitFlag(register=_RSTERRS, lowest_bit=4, num_bits=4)
-    c_vbus_rst = multiBitFlag(register=_RSTERRS, lowest_bit=0, num_bits=4)
-    c_deploy = multiBitFlag(register=_DCOUNT, lowest_bit=0, num_bits=8)
-    c_downlink = multiBitFlag(register=_DWNLINK, lowest_bit=0, num_bits=8)
-    c_logfail = multiBitFlag(register=_LOGFAIL, lowest_bit=0, num_bits=8)
+    c_boot = multiByte(num_bytes=2, lowest_register=1)
+    c_software_error = multiByte(num_bytes=1, lowest_register=3)
+    c_downlink = multiByte(num_bytes=4, lowest_register=4)
+    c_uplink = multiByte(num_bytes=4, lowest_register=8)
 
     tasko = None
     _RGB = (0, 0, 0)
@@ -172,19 +162,10 @@ class _Satellite:
             print('[ERROR][Burning]', e)
             return False
 
-    def zero_flags(self):
-        """ zero all flags in non volatile memory """
-        self.f_contact = 0
-        self.f_burn = 0
-
-    def zero_counters(self):
-        """ zero all counters in non volatile memory """
-        self.c_boot = 0
-        self.c_state_err = 0
-        self.c_vbus_rst = 0
-        self.c_deploy = 0
-        self.c_downlink = 0
-        self.c_logfail = 0
+    def clear_nvm(self):
+        """ clear all non volatile memory """
+        for i in range(len(nvm)):
+            nvm[i] = 0
 
     def enable_low_power(self):
         """ set all devices into lowest available power modes """
