@@ -83,6 +83,7 @@ class _Satellite:
         self.sim = False
         self.randomize_voltage = False
         self.sdcard = SD()
+        self.vfs = None
 
     @property
     def acceleration(self):

@@ -9,11 +9,11 @@ sys.path.insert(0, './state_machine/frame/')
 
 import Tasks.radio as radio
 from radio_driver import _Packet as Packet
-import radio_utils.headers as headers
 import radio_utils.commands as cdh
 from radio_utils.memory_buffered_message import MemoryBufferedMessage
 from pycubed import cubesat
 from state_machine import state_machine
+from testutils import command_data
 
 radio.ANTENNA_ATTACHED = True
 state_machine.state = 'Debug'
@@ -22,8 +22,6 @@ state_machine.state = 'Debug'
 cubesat.radio._rx_time_bias = 0.0
 cubesat.radio._rx_time_dev = 0.0
 
-def command_data(command_code, args):
-    return bytes([headers.COMMAND]) + b'p\xba\xb8C' + command_code + args
 
 class AssertCalled:
 

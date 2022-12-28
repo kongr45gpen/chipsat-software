@@ -3,4 +3,7 @@ import os
 class SD:
 
     def __init__(self):
-        os.mkdir('./sd')
+        try:
+            os.mkdir('./sd')
+        except Exception:
+            pass

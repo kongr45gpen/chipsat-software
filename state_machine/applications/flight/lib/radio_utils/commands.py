@@ -24,7 +24,7 @@ QUERY = b'\x00\x03'
 EXEC_PY = b'\x00\x04'
 REQUEST_FILE = b'\x00\x05'
 LIST_DIR = b'\x00\x06'
-TQ_LEN = b'\x00\x07'
+TQ_SIZE = b'\x00\x07'
 MOVE_FILE = b'\x00\x08'
 COPY_FILE = b'\x00\x09'
 DELETE_FILE = b'\x00\x10'
@@ -90,10 +90,10 @@ def list_dir(task, path):
     res = json.dumps(res)
     _downlink(res)
 
-def tq_len(task):
+def tq_size(task):
     """Return the length of the transmission queue"""
-    len = str(tq.len())
-    tq.push(Message(1, len))
+    len = str(tq.size())
+    _downlink(f"{len}")
 
 def move_file(task, args):
     """
@@ -243,7 +243,7 @@ commands = {
     EXEC_PY: {"function": exec_py, "name": "EXEC_PY", "will_respond": False, "has_args": True},
     REQUEST_FILE: {"function": request_file, "name": "REQUEST_FILE", "will_respond": True, "has_args": True},
     LIST_DIR: {"function": list_dir, "name": "LIST_DIR", "will_respond": True, "has_args": True},
-    TQ_LEN: {"function": tq_len, "name": "TQ_LEN", "will_respond": True, "has_args": False},
+    TQ_SIZE: {"function": tq_size, "name": "TQ_SIZE", "will_respond": True, "has_args": False},
     MOVE_FILE: {"function": move_file, "name": "MOVE_FILE", "will_respond": True, "has_args": True},
     COPY_FILE: {"function": copy_file, "name": "COPY_FILE", "will_respond": True, "has_args": True},
     DELETE_FILE: {"function": delete_file, "name": "DELETE_FILE", "will_respond": True, "has_args": True},
