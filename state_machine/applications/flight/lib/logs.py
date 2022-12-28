@@ -22,7 +22,7 @@ def beacon_packet():
     """
     state_byte = state_machine.states.index(state_machine.state)
     flags = ((cubesat.f_contact << 1) | (cubesat.f_burn)) & 0xFF
-    state_error = cubesat.c_state_err
+    software_error = cubesat.c_software_error
     boot_count = cubesat.c_boot
     vbatt = cubesat.battery_voltage
     cpu_temp = cubesat.temperature_cpu if cubesat.micro else nan
@@ -32,7 +32,7 @@ def beacon_packet():
     rssi = cubesat.radio.last_rssi if cubesat.radio else nan
     fei = cubesat.radio.frequency_error if cubesat.radio else nan
     return struct.pack(beacon_format,
-                       state_byte, flags, state_error, boot_count,
+                       state_byte, flags, software_error, boot_count,
                        vbatt, cpu_temp, imu_temp,
                        gyro[0], gyro[1], gyro[2],
                        mag[0], mag[1], mag[2],
@@ -57,7 +57,7 @@ def unpack_beacon(bytes):
     """Unpacks the fields from the beacon packet packed by `beacon_packet`
     """
 
-    (state_byte, flags, state_error, boot_count,
+    (state_byte, flags, software_error, boot_count,
      vbatt, cpu_temp, imu_temp,
      gyro0, gyro1, gyro2,
      mag0, mag1, mag2,
@@ -69,7 +69,7 @@ def unpack_beacon(bytes):
     return {"state_index": state_byte,
             "contact_flag": bool(flags & (0b1 << 1)),
             "burn_flag": bool(flags & (0b1 << 0)),
-            "software_error_count": state_error,
+            "software_error_count": software_error,
             "boot_count": boot_count,
             "battery_voltage": vbatt,
             "cpu_temperature_C": cpu_temp,

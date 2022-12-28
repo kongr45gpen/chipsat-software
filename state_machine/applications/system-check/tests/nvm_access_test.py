@@ -133,8 +133,8 @@ def prompt_to_zero_counters_and_flags():
     nvm_reset = input(f"\n\nWould you like to zero the counters and flags? Select {bold}(y){normal} for yes," +
                       f" or {bold}(n){normal} for no:\n~> ")
     if nvm_reset.lower() == 'y':
-        cubesat.zero_counters()
-        cubesat.zero_flags()
+        print('Clearing all of nvm, this may take a long time the first time')
+        cubesat.clear_nvm()
 
 async def run(result_dict):
     """
