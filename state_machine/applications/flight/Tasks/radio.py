@@ -18,7 +18,7 @@ def should_transmit():
     """
     Return if we should transmit
     """
-    tx_ready = ANTENNA_ATTACHED and not tq.empty()
+    tx_ready = ANTENNA_ATTACHED and not tq.empty() and cubesat.radio.fifo_empty()
     if tx_ready:
         global tx_ready_counter
         tx_ready_counter += 1
