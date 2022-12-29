@@ -17,6 +17,7 @@ import supervisor
 from logs import beacon_packet
 import msgpack
 from io import BytesIO
+import struct
 
 NO_OP = b'\x00\x00'
 HARD_RESET = b'\x00\x01'
@@ -33,6 +34,7 @@ REQUEST_BEACON = b'\x00\x12'
 GET_RTC = b'\x00\x13'
 SET_RTC_UTIME = b'\x00\x14'
 GET_RTC_UTIME = b'\x00\x15'
+SET_RTC = b'\x00\x16'
 
 
 COMMAND_ERROR_PRIORITY = 9
@@ -165,20 +167,25 @@ def request_beacon(task):
 
 def get_rtc(task):
     """Get the RTC time"""
-    _downlink_msg(_pack(cubesat.rtc.datetime))
+    _downlink_msg(_pack(tuple(cubesat.rtc.datetime)))
 
 def get_rtc_utime(task):
     """Get the RTC time as a unix timestamp"""
-    _downlink_msg(_pack(time.mktime(cubesat.rtc.datetime)))
+    _downlink_msg(struct.pack('i', time.mktime(cubesat.rtc.datetime)))
+
+def set_rtc(task, args):
+    """Set the RTC to the passed time"""
+    ymdhms = _unpack(args)  # year, month, day, hour, minute, second
+    cubesat.rtc.datetime = time.struct_time(ymdhms + [-1, -1, -1])
 
 def set_rtc_utime(task, args):
     """Set the RTC to the passed time
 
     :param task: The task that called this function
     :param args: The *unix time* to set the RTC to"""
-    utime = _unpack(args)
+    utime = struct.unpack(args)
+    utime = utime[0]  # unpack returns a "tuple" with one element
     t = time.localtime(utime)
-    task.debug(f'Setting RTC to {t}')
     cubesat.rtc.datetime = t
 
 
@@ -250,8 +257,9 @@ commands = {
     RELOAD: {"function": reload, "name": "RELOAD", "will_respond": True, "has_args": False},
     REQUEST_BEACON: {"function": request_beacon, "name": "REQUEST_BEACON", "will_respond": True, "has_args": False},
     GET_RTC: {"function": get_rtc, "name": "GET_RTC", "will_respond": True, "has_args": False},
-    SET_RTC_UTIME: {"function": set_rtc_utime, "name": "SET_RTC_UTIME", "will_respond": True, "has_args": True},
     GET_RTC_UTIME: {"function": get_rtc_utime, "name": "GET_RTC_UTIME", "will_respond": True, "has_args": False},
+    SET_RTC: {"function": set_rtc, "name": "SET_RTC", "will_respond": False, "has_args": True},
+    SET_RTC_UTIME: {"function": set_rtc_utime, "name": "SET_RTC_UTIME", "will_respond": False, "has_args": True},
 }
 
 super_secret_code = b'p\xba\xb8C'
