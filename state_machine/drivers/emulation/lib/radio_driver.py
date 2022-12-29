@@ -54,7 +54,11 @@ class Radio:
     async def send_with_ack(self, packet, keep_listening=True):
         return True
 
+<<<<<<< HEAD
     def fifo_empty(self):
+=======
+    def fifo_empty():
+>>>>>>> cd47bc6a07822d303077ddf2e7214a9ae8042b79
         return True
 
     def _push_rx_queue(self, packet):
