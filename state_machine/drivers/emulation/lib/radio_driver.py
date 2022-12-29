@@ -54,6 +54,9 @@ class Radio:
     async def send_with_ack(self, packet, keep_listening=True):
         return True
 
+    def fifo_empty():
+        return True
+
     def _push_rx_queue(self, packet):
         """Debug function to push a packet into the rx queue (lifo)"""
         self._rx_queue.put(packet)
