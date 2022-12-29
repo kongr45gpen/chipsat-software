@@ -8,21 +8,26 @@ import radio_utils.transmission_queue as tq
 import radio_utils.commands as cdh
 import radio_utils.headers as headers
 from pycubed import cubesat
+import time
 
 ANTENNA_ATTACHED = False
 
 TX_SKIP = 5  # skip every TX_SKIP transmissions
 tx_ready_counter = 0
 
+TX_UPLINK_ENABLE_TIME = 5 * 60  # 5 minutes
+tx_before_time = float('inf')
+
 def should_transmit():
     """
     Return if we should transmit
     """
     tx_ready = ANTENNA_ATTACHED and not tq.empty() and cubesat.radio.fifo_empty()
+    tx_time_ready = time.time() < tx_before_time
     if tx_ready:
         global tx_ready_counter
         tx_ready_counter += 1
-    return tx_ready and (tx_ready_counter % TX_SKIP != 0)
+    return tx_ready and (tx_ready_counter % TX_SKIP != 0) and tx_time_ready
 
 class task(Task):
     name = 'radio'
@@ -100,6 +105,7 @@ class task(Task):
         """Called when a packet is received"""
         cubesat.c_uplink += 1
         cubesat.f_contact = True
+        tx_before_time = time.time() + TX_UPLINK_ENABLE_TIME
 
     def on_downlink(self):
         """Called when a packet is sent"""
