@@ -35,7 +35,7 @@ GET_RTC = b'\x00\x13'
 SET_RTC_UTIME = b'\x00\x14'
 GET_RTC_UTIME = b'\x00\x15'
 SET_RTC = b'\x00\x16'
-
+CLEAR_TX_QUEUE = b'\x00\x17'
 
 COMMAND_ERROR_PRIORITY = 9
 BEACON_PRIORITY = 10
@@ -188,6 +188,11 @@ def set_rtc_utime(task, args):
     t = time.localtime(utime)
     cubesat.rtc.datetime = t
 
+def clear_tx_queue(task):
+    """Clear the transmission queue"""
+    tq.clear()
+    task.debug('Cleared transmission queue')
+
 
 """
 HELPER FUNCTIONS
@@ -260,6 +265,7 @@ commands = {
     GET_RTC_UTIME: {"function": get_rtc_utime, "name": "GET_RTC_UTIME", "will_respond": True, "has_args": False},
     SET_RTC: {"function": set_rtc, "name": "SET_RTC", "will_respond": False, "has_args": True},
     SET_RTC_UTIME: {"function": set_rtc_utime, "name": "SET_RTC_UTIME", "will_respond": False, "has_args": True},
+    CLEAR_TX_QUEUE: {"function": clear_tx_queue, "name": "CLEAR_TX_QUEUE", "will_respond": False, "has_args": False},
 }
 
 super_secret_code = b'p\xba\xb8C'
