@@ -48,10 +48,13 @@ class Radio:
     def sleep(self):
         self.listening = False
 
-    def send(self, packet, destination=0x00, keep_listening=True):
+    async def send(self, packet, destination=0x00, keep_listening=True):
         return None
 
     async def send_with_ack(self, packet, keep_listening=True):
+        return True
+
+    def fifo_empty(self):
         return True
 
     def _push_rx_queue(self, packet):

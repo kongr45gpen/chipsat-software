@@ -11,11 +11,18 @@ from pycubed import cubesat
 
 ANTENNA_ATTACHED = False
 
+TX_SKIP = 5  # skip every TX_SKIP transmissions
+tx_ready_counter = 0
+
 def should_transmit():
     """
     Return if we should transmit
     """
-    return ANTENNA_ATTACHED and not tq.empty()
+    tx_ready = ANTENNA_ATTACHED and not tq.empty() and cubesat.radio.fifo_empty()
+    if tx_ready:
+        global tx_ready_counter
+        tx_ready_counter += 1
+    return tx_ready and (tx_ready_counter % TX_SKIP != 0)
 
 class task(Task):
     name = 'radio'
@@ -61,7 +68,7 @@ class task(Task):
             if tq.peek().done():
                 tq.pop()
         else:
-            self.debug("No packets to send, listening for packets...")
+            self.debug("Listening for packets...")
             response = await cubesat.radio.receive(
                 keep_listening=True,
                 with_ack=ANTENNA_ATTACHED,
