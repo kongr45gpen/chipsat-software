@@ -56,7 +56,7 @@ class task(Task):
             else:
                 await cubesat.radio.send(packet, keep_listening=True)
 
-            cubesat.c_downlink += 1
+            self.on_downlink()
 
             if tq.peek().done():
                 tq.pop()
@@ -68,8 +68,7 @@ class task(Task):
                 with_header=False,
                 timeout=10)
             if response is not None:
-                cubesat.c_uplink += 1
-                cubesat.f_contact = True
+                self.on_uplink()
                 header = response[0]
                 response = response[1:]  # remove the header byte
 
@@ -89,6 +88,15 @@ class task(Task):
                     await self.handle_command(response)
             else:
                 self.debug('No packets received')
+
+    def on_uplink(self):
+        """Called when a packet is received"""
+        cubesat.c_uplink += 1
+        cubesat.f_contact = True
+
+    def on_downlink(self):
+        """Called when a packet is sent"""
+        cubesat.c_downlink += 1
 
     def handle_memory_buffered_message(self, header, response):
         """Handler function for the memory_buffered_message message type"""
