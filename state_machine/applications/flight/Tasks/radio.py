@@ -16,7 +16,7 @@ TX_SKIP = 5  # skip every TX_SKIP transmissions
 tx_ready_counter = 0
 
 TX_UPLINK_ENABLE_TIME = 5 * 60  # 5 minutes
-tx_before_time = float('inf')
+tx_before_time = 0
 
 def should_transmit():
     """
@@ -105,6 +105,7 @@ class task(Task):
         """Called when a packet is received"""
         cubesat.c_uplink += 1
         cubesat.f_contact = True
+        global tx_before_time
         tx_before_time = time.time() + TX_UPLINK_ENABLE_TIME
 
     def on_downlink(self):
