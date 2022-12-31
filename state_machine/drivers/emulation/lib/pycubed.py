@@ -25,6 +25,12 @@ Define HardwareInitException
 class HardwareInitException(Exception):
     pass
 
+class rtcStruct:
+    def __init__(self, dateInput: time.struct_time):
+        self.datetime = dateInput
+
+    def updateTime(self, dateInput) -> None:
+        self.datetime = dateInput
 
 class _Satellite:
     # Define NVM flags
@@ -68,6 +74,7 @@ class _Satellite:
         self._torque = [0, 0, 0]
         self._cpu_temp = 30
         self._imu_temperature = 20
+        self._lux = array([2.0, 4.0, 7.0])
 
         # debug utilities
         self.sim = False
@@ -92,6 +99,12 @@ class _Satellite:
         """ return the gyroscope reading from the IMU """
         reader.read(self)
         return self._gyro
+
+    @property
+    def lux(self):
+        """return lux value from the sun sensors"""
+        reader.read(self)
+        return self._lux
 
     @property
     def temperature_imu(self):
@@ -138,6 +151,22 @@ class _Satellite:
 
     @property
     def neopixel(self):
+        return True
+
+    @property
+    def rtc(self):
+        return rtcStruct(time.gmtime())
+
+    @property
+    def sun_yn(self):
+        return True
+
+    @property
+    def sun_zn(self):
+        return True
+
+    @property
+    def sun_xn(self):
         return True
 
     async def burn(self, dutycycle=0.5, duration=1):
