@@ -102,10 +102,15 @@ class _Satellite:
         return self._gyro
 
     @property
-    def lux(self):
+    def luxp(self):
         """return lux value from the sun sensors"""
         reader.read(self)
-        return self._lux
+        return self._luxp
+
+    @property
+    def luxn(self):
+        reader.read(self)
+        return self._luxn
 
     @property
     def temperature_imu(self):
