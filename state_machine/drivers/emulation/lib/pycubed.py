@@ -139,11 +139,6 @@ class _Satellite:
         print(f'log not implemented, tried to log: {str}')
 
     @property
-    def sun_vector(self):
-        """Returns the sun pointing vector in the body frame"""
-        return array([0, 0, 0])
-
-    @property
     def imu(self):
         return True
 
