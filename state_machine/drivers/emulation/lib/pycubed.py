@@ -102,13 +102,6 @@ class _Satellite:
         return self._gyro
 
     @property
-    def sun_vector(self):
-        """returns the sun pointing vector in the body frame"""
-        return array([self._luxp[0] - self._luxn[0],
-                      self._luxp[1] - self._luxn[1],
-                      self._luxp[2] - self._luxn[2]])
-
-    @property
     def temperature_imu(self):
         """ return the thermometer reading from the IMU """
         reader.read(self)
@@ -141,6 +134,13 @@ class _Satellite:
     @property
     def imu(self):
         return True
+
+    @property
+    def sun_vector(self):
+        """returns the sun pointing vector in the body frame"""
+        return array([self._luxp[0] - self._luxn[0],
+                      self._luxp[1] - self._luxn[1],
+                      self._luxp[2] - self._luxn[2]])
 
     @property
     def micro(self):
