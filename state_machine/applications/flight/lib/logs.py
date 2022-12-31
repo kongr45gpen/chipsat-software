@@ -7,10 +7,10 @@ except ImportError:
 from pycubed import cubesat
 from state_machine import state_machine
 
-# 3 uint8 + 1 uint16 + 11 float32
-# = 49 bytes of data
-# = 52 byte c struct (1 extra to align chars, 2 extra to align short)
-beacon_format = 3 * 'B' + 'H' + 'f' * 11
+# 3 uint8 + 1 uint16 + 14 float32
+# = 61 bytes of data
+# = 64 byte c struct (1 extra to align chars, 2 extra to align short)
+beacon_format = 3 * 'B' + 'H' + 'f' * 14
 
 def beacon_packet():
     """Creates a beacon packet containing the: state index byte, f_contact and f_burn flags,
@@ -31,12 +31,16 @@ def beacon_packet():
     mag = cubesat.magnetic if cubesat.imu else array([nan, nan, nan])
     rssi = cubesat.radio.last_rssi if cubesat.radio else nan
     fei = cubesat.radio.frequency_error if cubesat.radio else nan
+    sun = cubesat.sun_vector if (
+        cubesat.sun_xp and cubesat.sun_xn and cubesat.sun_yp and cubesat.sun_yn and
+        cubesat.sun_zp and cubesat.sun_zn) else array([nan, nan, nan])
     return struct.pack(beacon_format,
                        state_byte, flags, software_error, boot_count,
                        vbatt, cpu_temp, imu_temp,
                        gyro[0], gyro[1], gyro[2],
                        mag[0], mag[1], mag[2],
-                       rssi, fei)
+                       rssi, fei,
+                       sun[0], sun[1], sun[2])
 
 
 def human_time_stamp():
@@ -61,10 +65,12 @@ def unpack_beacon(bytes):
      vbatt, cpu_temp, imu_temp,
      gyro0, gyro1, gyro2,
      mag0, mag1, mag2,
-     rssi, fei) = struct.unpack(beacon_format, bytes)
+     rssi, fei,
+     sun1, sun2, sun3) = struct.unpack(beacon_format, bytes)
 
     gyro = array([gyro0, gyro1, gyro2])
     mag = array([mag0, mag1, mag2])
+    sun = array([sun1, sun2, sun3])
 
     return {"state_index": state_byte,
             "contact_flag": bool(flags & (0b1 << 1)),
@@ -78,4 +84,5 @@ def unpack_beacon(bytes):
             "mag": mag,
             "RSSI_dB": rssi,
             "FEI_Hz": fei,
+            "sun": sun,
             }

@@ -3,7 +3,6 @@
 from Tasks.log import LogTask as Task
 from pycubed import cubesat
 import files
-import time
 import logs
 
 class task(Task):
@@ -24,10 +23,10 @@ class task(Task):
             self.write_beacon()
 
     def write_beacon(self):
-        currTime = time.time()
-        TIMEINTERVAL = 1000
+        t = cubesat.rtc.datetime
+        hour_stamp = f'{t.tm_year}.{t.tm_mon}.{t.tm_mday}.{t.tm_hour}'
         log_directory = "/sd/logs/"
-        current_file = f"{log_directory}beacon/{int(currTime//TIMEINTERVAL)}.txt"
+        current_file = f"{log_directory}beacon/{hour_stamp}.txt"
         beacon_packet = logs.beacon_packet()
         file = open(current_file, "ab+")
         file.write(bytearray(beacon_packet))
