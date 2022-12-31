@@ -74,7 +74,8 @@ class _Satellite:
         self._torque = [0, 0, 0]
         self._cpu_temp = 30
         self._imu_temperature = 20
-        self._lux = array([2.0, 4.0, 7.0])
+        self._luxn = array([2.0, 4.0, 7.0])
+        self._luxp = array([3.0, 1.0, 2.0])
 
         # debug utilities
         self.sim = False
@@ -167,6 +168,18 @@ class _Satellite:
 
     @property
     def sun_xn(self):
+        return True
+
+    @property
+    def sun_yp(self):
+        return True
+
+    @property
+    def sun_zp(self):
+        return True
+
+    @property
+    def sun_xp(self):
         return True
 
     async def burn(self, dutycycle=0.5, duration=1):
