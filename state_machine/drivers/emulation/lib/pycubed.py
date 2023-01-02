@@ -25,12 +25,16 @@ Define HardwareInitException
 class HardwareInitException(Exception):
     pass
 
-class rtcStruct:
+class rtc_sensor:
     def __init__(self, dateInput: time.struct_time):
         self.datetime = dateInput
 
-    def updateTime(self, dateInput) -> None:
+    def updateTime(self, dateInput):
         self.datetime = dateInput
+
+class sun_sensor:
+    def __init__(self, lux):
+        self.lux = lux
 
 class _Satellite:
     # Define NVM flags
@@ -74,8 +78,8 @@ class _Satellite:
         self._torque = [0, 0, 0]
         self._cpu_temp = 30
         self._imu_temperature = 20
-        self._luxn = array([2.0, 4.0, 7.0])
         self._luxp = array([3.0, 1.0, 2.0])
+        self._luxn = array([2.0, 4.0, 7.0])
 
         # debug utilities
         self.sim = False
@@ -143,6 +147,14 @@ class _Satellite:
                       self._luxp[2] - self._luxn[2]])
 
     @property
+    def lux_p(self):
+        return array([self._luxp[0], self._luxp[1], self._luxp[2]])
+
+    @property
+    def lux_n(self):
+        return array([self._luxn[0], self._luxn[1], self._luxn[2]])
+
+    @property
     def micro(self):
         return True
 
@@ -152,31 +164,31 @@ class _Satellite:
 
     @property
     def rtc(self):
-        return rtcStruct(time.gmtime())
+        return rtc_sensor(time.gmtime())
 
     @property
     def sun_yn(self):
-        return True
+        return sun_sensor(self._luxn[1])
 
     @property
     def sun_zn(self):
-        return True
+        return sun_sensor(self._luxn[2])
 
     @property
     def sun_xn(self):
-        return True
+        return sun_sensor(self._luxn[0])
 
     @property
     def sun_yp(self):
-        return True
+        return sun_sensor(self._luxp[1])
 
     @property
     def sun_zp(self):
-        return True
+        return sun_sensor(self._luxp[2])
 
     @property
     def sun_xp(self):
-        return True
+        return sun_sensor(self._luxp[0])
 
     async def burn(self, dutycycle=0.5, duration=1):
         """

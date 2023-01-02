@@ -7,10 +7,10 @@ except ImportError:
 from pycubed import cubesat
 from state_machine import state_machine
 
-# 3 uint8 + 1 uint16 + 14 float32
-# = 61 bytes of data
-# = 64 byte c struct (1 extra to align chars, 2 extra to align short)
-beacon_format = 3 * 'B' + 'H' + 'f' * 14
+# 3 uint8 + 1 uint16 + 17 float32
+# = 73 bytes of data
+# = 76 byte c struct (1 extra to align chars, 2 extra to align short)
+beacon_format = 3 * 'B' + 'H' + 'f' * 17
 
 def beacon_packet():
     """Creates a beacon packet containing the: state index byte, f_contact and f_burn flags,
@@ -31,16 +31,20 @@ def beacon_packet():
     mag = cubesat.magnetic if cubesat.imu else array([nan, nan, nan])
     rssi = cubesat.radio.last_rssi if cubesat.radio else nan
     fei = cubesat.radio.frequency_error if cubesat.radio else nan
-    sun = cubesat.sun_vector if (
-        cubesat.sun_xp and cubesat.sun_xn and cubesat.sun_yp and cubesat.sun_yn and
-        cubesat.sun_zp and cubesat.sun_zn) else array([nan, nan, nan])
+    lux_xp = cubesat.sun_xp.lux if cubesat.sun_xp else nan
+    lux_yp = cubesat.sun_yp.lux if cubesat.sun_yp else nan
+    lux_zp = cubesat.sun_zp.lux if cubesat.sun_zp else nan
+    lux_xn = cubesat.sun_xn.lux if cubesat.sun_xn else nan
+    lux_yn = cubesat.sun_yn.lux if cubesat.sun_yn else nan
+    lux_zn = cubesat.sun_zn.lux if cubesat.sun_zn else nan
     return struct.pack(beacon_format,
                        state_byte, flags, software_error, boot_count,
                        vbatt, cpu_temp, imu_temp,
                        gyro[0], gyro[1], gyro[2],
                        mag[0], mag[1], mag[2],
                        rssi, fei,
-                       sun[0], sun[1], sun[2])
+                       lux_xp, lux_yp, lux_zp,
+                       lux_xn, lux_yn, lux_zn)
 
 
 def human_time_stamp():
@@ -66,11 +70,13 @@ def unpack_beacon(bytes):
      gyro0, gyro1, gyro2,
      mag0, mag1, mag2,
      rssi, fei,
-     sun1, sun2, sun3) = struct.unpack(beacon_format, bytes)
+     sun_xp, sun_yp, sun_zp,
+     sun_xn, sun_yn, sun_zn) = struct.unpack(beacon_format, bytes)
 
     gyro = array([gyro0, gyro1, gyro2])
     mag = array([mag0, mag1, mag2])
-    sun = array([sun1, sun2, sun3])
+    sun_p = array([sun_xp, sun_yp, sun_zp])
+    sun_n = array([sun_xn, sun_yn, sun_zn])
 
     return {"state_index": state_byte,
             "contact_flag": bool(flags & (0b1 << 1)),
@@ -84,5 +90,6 @@ def unpack_beacon(bytes):
             "mag": mag,
             "RSSI_dB": rssi,
             "FEI_Hz": fei,
-            "sun": sun,
+            "sun_positive": sun_p,
+            "sun_negative": sun_n,
             }

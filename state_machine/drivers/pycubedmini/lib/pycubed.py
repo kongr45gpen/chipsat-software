@@ -424,6 +424,18 @@ class _Satellite:
              self.sun_yp.lux - self.sun_yn.lux,
              self.sun_zp.lux - self.sun_zn.lux])
 
+    @property
+    def lux_p(self):
+        return array([self.sun_xp.lux if self.sun_xp else None,
+                      self.sun_yp.lux if self.sun_yp else None,
+                      self.sun_zp.lux if self.sun_zp else None])
+
+    @property
+    def lux_n(self):
+        return array([self.sun_xn.lux if self.sun_xn else None,
+                      self.sun_yn.lux if self.sun_yn else None,
+                      self.sun_zn.lux if self.sun_zn else None])
+
     async def burn(self, dutycycle=0.5, duration=1):
         """
         Activates the burnwire for a given duration and dutycycle.
