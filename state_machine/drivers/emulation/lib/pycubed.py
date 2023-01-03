@@ -26,7 +26,7 @@ class HardwareInitException(Exception):
     pass
 
 class rtc_sensor:
-    def __init__(self, dateInput: time.struct_time):
+    def __init__(self, dateInput):
         self.datetime = dateInput
 
     def updateTime(self, dateInput):
@@ -164,7 +164,7 @@ class _Satellite:
 
     @property
     def rtc(self):
-        return rtc_sensor(time.gmtime())
+        return rtc_sensor(time.localtime())
 
     @property
     def sun_yn(self):
