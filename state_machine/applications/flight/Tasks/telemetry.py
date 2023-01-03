@@ -19,15 +19,19 @@ class task(Task):
         try:
             self.write_beacon()
         except Exception:
-            files.mkdirp('/sd/logs/beacon/')
+            files.mkdirp('/sd/logs/telemetry/')
             self.write_beacon()
 
     def write_beacon(self):
         t = cubesat.rtc.datetime
         hour_stamp = f'{t.tm_year}.{t.tm_mon}.{t.tm_mday}.{t.tm_hour}'
-        log_directory = "/sd/logs/"
-        current_file = f"{log_directory}beacon/{hour_stamp}.txt"
+        current_file = f"/sd/logs/telemetry/{hour_stamp}.txt"
+        time_packet = logs.time_packet(t)
         beacon_packet = logs.beacon_packet()
+        system_packet = logs.system_packet()
         file = open(current_file, "ab+")
+        file.write(bytearray(time_packet))
         file.write(bytearray(beacon_packet))
+        file.write(bytearray(system_packet))
+        file.write(bytearray("\n", 'utf-8'))
         file.close()
