@@ -62,17 +62,6 @@ def system_packet():
                        lux_xp, lux_yp, lux_zp,
                        lux_xn, lux_yn, lux_zn)
 
-def time_packet(t):
-    """returns a struct containing only the minutes and seconds, which are
-    all that is necessary given the file name will contain the year, month
-    day, hour"""
-
-    (tm_year, tm_month, tm_day,
-     tm_hour, tm_min, tm_sec,
-     tm_wday, tm_yday, tm_isdst) = t
-    return struct.pack(time_format,
-                       tm_min, tm_sec,)
-
 def human_time_stamp():
     """Returns a human readable time stamp in the format: 'year.month.day hour:min'
     Gets the time from the RTC."""

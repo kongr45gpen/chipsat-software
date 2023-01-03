@@ -26,11 +26,10 @@ class task(Task):
         t = cubesat.rtc.datetime
         hour_stamp = f'{t.tm_year}.{t.tm_mon}.{t.tm_mday}.{t.tm_hour}'
         current_file = f"/sd/logs/telemetry/{hour_stamp}.txt"
-        time_packet = logs.time_packet(t)
         beacon_packet = logs.beacon_packet()
         system_packet = logs.system_packet()
         file = open(current_file, "ab+")
-        file.write(bytearray(time_packet))
+        file.write(bytearray([t.tm_min, t.tm_sec]))
         file.write(bytearray(beacon_packet))
         file.write(bytearray(system_packet))
         file.write(bytearray("\n", 'utf-8'))
