@@ -56,6 +56,7 @@ class _Satellite:
     # Define NVM flags
     f_contact = bitFlag(register=0, bit=1)
     f_burn = bitFlag(register=0, bit=2)
+    f_datetime_valid = bitFlag(register=0, bit=3)
 
     # Define NVM counters
     c_boot = multiByte(num_bytes=2, lowest_register=1)
@@ -348,7 +349,14 @@ class _Satellite:
     def rtc(self):
         """ Initialize Real Time Clock """
         try:
-            return PCF8523(self.i2c(hw_config.RTC_I2C))
+            rtc = PCF8523(self.i2c(hw_config.RTC_I2C))
+            rtc.high_capacitance = False
+            if rtc.lost_power:
+                restore_time = time.struct_time((2000, 0, 0, 0, 0, 0, 0, -1, -1))
+                print(f"RTC lost power, RTC time = {rtc.datetime}, restoring to {restore_time}")
+                rtc.datetime = restore_time
+                self.f_datetime_valid = False
+            return rtc
         except Exception as e:
             print(f'[ERROR][Initializing RTC] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
