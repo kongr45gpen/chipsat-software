@@ -73,6 +73,9 @@ def time_packet(t):
     return struct.pack(time_format,
                        tm_min, tm_sec,)
 
+def telemetry_packet(t):
+    return bytearray(time_packet(t)) + bytearray(beacon_packet()) + bytearray(system_packet())
+
 def human_time_stamp():
     """Returns a human readable time stamp in the format: 'year.month.day hour:min'
     Gets the time from the RTC."""
@@ -95,7 +98,7 @@ def unpack_beacon(bytes):
      vbatt, cpu_temp, imu_temp,
      gyro0, gyro1, gyro2,
      mag0, mag1, mag2,
-     rssi, fei,) = struct.unpack(beacon_format, bytes)
+     rssi, fei) = struct.unpack(beacon_format, bytes)
 
     gyro = array([gyro0, gyro1, gyro2])
     mag = array([mag0, mag1, mag2])
@@ -133,9 +136,12 @@ def unpack_time(bytes):
             }
 
 def unpack_telemetry(bytes):
-    t = unpack_time(bytes[:4])
-    beacon = unpack_beacon(bytes[4:56])
-    system = unpack_system(bytes[56:80])
+    time_buffer = struct.calcsize(time_format)
+    beacon_buffer = struct.calcsize(beacon_format)
+    system_buffer = struct.calcsize(system_format)
+    t = unpack_time(bytes[0:time_buffer])
+    beacon = unpack_beacon(bytes[time_buffer:time_buffer + beacon_buffer])
+    system = unpack_system(bytes[time_buffer + beacon_buffer:time_buffer + beacon_buffer + system_buffer])
     return {"datetime": t,
             "beacon": beacon,
             "system": system,

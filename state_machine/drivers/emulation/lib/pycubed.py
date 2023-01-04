@@ -25,12 +25,12 @@ Define HardwareInitException
 class HardwareInitException(Exception):
     pass
 
-class rtc_sensor:
-    def __init__(self, dateInput):
-        self.datetime = dateInput
+class rtc_device:
+    def __init__(self, date_input):
+        self.datetime = date_input
 
-    def updateTime(self, dateInput):
-        self.datetime = dateInput
+    def update_time(self, date_input):
+        self.datetime = date_input
 
 class sun_sensor:
     def __init__(self, lux):
@@ -147,14 +147,6 @@ class _Satellite:
                       self._luxp[2] - self._luxn[2]])
 
     @property
-    def lux_p(self):
-        return array([self._luxp[0], self._luxp[1], self._luxp[2]])
-
-    @property
-    def lux_n(self):
-        return array([self._luxn[0], self._luxn[1], self._luxn[2]])
-
-    @property
     def micro(self):
         return True
 
@@ -164,7 +156,7 @@ class _Satellite:
 
     @property
     def rtc(self):
-        return rtc_sensor(time.localtime())
+        return rtc_device(time.localtime())
 
     @property
     def sun_yn(self):
