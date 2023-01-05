@@ -141,6 +141,8 @@ def unpack_time(bytes):
     return time_tuple(tm_min, tm_sec)
 
 def unpack_telemetry(bytes):
+    """returns the contents of the telemetry file as a named tuple of named tuples
+    For example: you could access the gyro values via unpack_telemetry().beacon.gyro"""
     time_buffer = struct.calcsize(time_format)
     beacon_buffer = struct.calcsize(beacon_format)
     system_buffer = struct.calcsize(system_format)
