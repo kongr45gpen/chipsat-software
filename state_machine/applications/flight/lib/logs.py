@@ -36,7 +36,8 @@ time_tuple = namedtuple("time_tuple", ("tm_min", "tm_sec"))
 telemetry_tuple = namedtuple("telemetry_tuple", ("time", "beacon", "system"))
 
 def beacon_packet():
-    """Creates a beacon packet containing the: state index byte, f_contact and f_burn flags,
+    """Creates a beacon packet containing the: state index byte,
+    f_datetime_valid, f_contact and f_burn flags,
     state_error_count, boot count, battery voltage,
     CPU temperature, IMU temperature, gyro reading, mag reading,
     radio signal strength (RSSI), radio frequency error (FEI).
@@ -44,7 +45,9 @@ def beacon_packet():
     This data is packed into a c struct using `struct.pack`.
     """
     state_byte = state_machine.states.index(state_machine.state)
-    flags = ((cubesat.f_contact << 1) | (cubesat.f_burn)) & 0xFF
+    flags = ((cubesat.f_datetime_valid << 2) |
+             (cubesat.f_contact << 1) |
+             (cubesat.f_burn)) & 0xFF
     software_error = cubesat.c_software_error
     boot_count = cubesat.c_boot
     vbatt = cubesat.battery_voltage
@@ -91,11 +94,14 @@ def time_packet(t):
 def telemetry_packet(t):
     return bytearray(time_packet(t)) + bytearray(beacon_packet()) + bytearray(system_packet())
 
-def human_time_stamp():
-    """Returns a human readable time stamp in the format: 'year.month.day hour:min'
-    Gets the time from the RTC."""
-    t = cubesat.rtc.datetime
-    return f'{t.tm_year}.{t.tm_mon}.{t.tm_mday}.{t.tm_hour}:{t.tm_min}:{t.tm_sec}'
+def human_time_stamp(t):
+    """Returns a human readable time stamp in the format: 'boot_year.month.day_hour:min'
+    Gets the time from the RTC.
+
+    :param t: The time to format
+    :type t: time.struct_time"""
+    boot = cubesat.c_boot
+    return f'{boot:05}_{t.tm_year:04}.{t.tm_mon:02}.{t.tm_mday:02}_{t.tm_hour:02}:{t.tm_min:02}:{t.tm_sec:02}'
 
 def try_mkdir(path):
     """Tries to make a directory at the given path.

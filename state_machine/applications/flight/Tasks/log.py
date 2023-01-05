@@ -2,6 +2,7 @@ from lib.template_task import Task
 from pycubed import cubesat
 import logs
 import traceback
+import time
 
 log_fd = None
 log_fd_str = None
@@ -32,9 +33,13 @@ class LogTask(Task):
         """
         Log a message to a log file.
         """
-        t = cubesat.rtc.datetime
-        hour_stamp = f'{t.tm_year}.{t.tm_mon}.{t.tm_mday}.{t.tm_hour}'
-        new_log_fd_str = f'/sd/logs/debug/{hour_stamp}.txt'
+        if cubesat.rtc:
+            t = cubesat.rtc.datetime
+        else:
+            t = time.localtime()
+        boot = cubesat.c_boot
+        hour_stamp = f'{t.tm_year:04}.{t.tm_mon:02}.{t.tm_mday:02}.{t.tm_hour:02}'
+        new_log_fd_str = f'/sd/logs/debug/{boot:05}/{hour_stamp}.txt'
         global log_fd
         global log_fd_str
         if new_log_fd_str != log_fd_str:
@@ -45,10 +50,11 @@ class LogTask(Task):
             except Exception:
                 logs.try_mkdir('/sd/logs/')
                 logs.try_mkdir('/sd/logs/debug/')
+                logs.try_mkdir(f'/sd/logs/debug/{boot}/')
                 log_fd = open(new_log_fd_str, 'a')
             log_fd_str = new_log_fd_str
 
-        log_fd.write(f'[{logs.human_time_stamp()}]\n')
+        log_fd.write(f'[{logs.human_time_stamp(t)}]\n')
         log_fd.write(msg)
         log_fd.write('\n')
 
