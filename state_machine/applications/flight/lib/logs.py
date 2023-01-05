@@ -33,7 +33,7 @@ time_format = 2 * 'H'
 # defines what the time_unpack will return
 time_tuple = namedtuple("time_tuple", ("tm_min", "tm_sec"))
 
-telemetry_tuple = namedtuple("telemetry_tuple", ("time", "beacon", "system"))
+telemetry_tuple = namedtuple("telemetry_tuple", ("t", "beacon", "system"))
 
 def beacon_packet():
     """Creates a beacon packet containing the: state index byte,
