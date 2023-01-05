@@ -14,10 +14,10 @@ from collections import namedtuple
 beacon_format = 3 * 'B' + 'H' + 'f' * 11
 
 # Defines what the unpack_beacon will return
-beacon_tuple = namedtuple("beacon_tuple", ("state_byte", "flags", "software_error",
-                                           "boot_count", "vbatt", "cpu_temp",
-                                           "imu_temp", "gyro", "mag",
-                                           "rssi", "fei"))
+beacon_tuple = namedtuple("beacon_tuple", ("state_index", "datetime_valid_flag", "contact_flag",
+                                           "burn_flag", "software_error", "boot_count",
+                                           "vbatt", "cpu_temp", "imu_temp",
+                                           "gyro", "mag", "rssi", "fei"))
 
 # 6 float32
 # = 24 bytes of data
@@ -117,7 +117,8 @@ def unpack_beacon(bytes):
     gyro = array([gyro0, gyro1, gyro2])
     mag = array([mag0, mag1, mag2])
 
-    return beacon_tuple(state_byte, flags, software_error,
+    return beacon_tuple(state_byte, bool(flags & (0b1 >> 2)), bool(flags & (0b1 >> 1)),
+                        bool(flags & (0b1 >> 0)), software_error,
                         boot_count, vbatt, cpu_temp,
                         imu_temp, gyro, mag,
                         rssi, fei)
