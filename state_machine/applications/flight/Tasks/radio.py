@@ -8,21 +8,26 @@ import radio_utils.transmission_queue as tq
 import radio_utils.commands as cdh
 import radio_utils.headers as headers
 from pycubed import cubesat
+import time
 
 ANTENNA_ATTACHED = False
 
 TX_SKIP = 5  # skip every TX_SKIP transmissions
 tx_ready_counter = 0
 
+TX_UPLINK_ENABLE_TIME = 5 * 60  # 5 minutes
+tx_before_time = 0
+
 def should_transmit():
     """
     Return if we should transmit
     """
     tx_ready = ANTENNA_ATTACHED and not tq.empty() and cubesat.radio.fifo_empty()
+    tx_time_ready = time.time() < tx_before_time
     if tx_ready:
         global tx_ready_counter
         tx_ready_counter += 1
-    return tx_ready and (tx_ready_counter % TX_SKIP != 0)
+    return tx_ready and (tx_ready_counter % TX_SKIP != 0) and tx_time_ready
 
 class task(Task):
     name = 'radio'
@@ -63,7 +68,7 @@ class task(Task):
             else:
                 await cubesat.radio.send(packet, keep_listening=True)
 
-            cubesat.c_downlink += 1
+            self.on_downlink()
 
             if tq.peek().done():
                 tq.pop()
@@ -75,8 +80,7 @@ class task(Task):
                 with_header=False,
                 timeout=10)
             if response is not None:
-                cubesat.c_uplink += 1
-                cubesat.f_contact = True
+                self.on_uplink()
                 header = response[0]
                 response = response[1:]  # remove the header byte
 
@@ -96,6 +100,17 @@ class task(Task):
                     await self.handle_command(response)
             else:
                 self.debug('No packets received')
+
+    def on_uplink(self):
+        """Called when a packet is received"""
+        cubesat.c_uplink += 1
+        cubesat.f_contact = True
+        global tx_before_time
+        tx_before_time = time.time() + TX_UPLINK_ENABLE_TIME
+
+    def on_downlink(self):
+        """Called when a packet is sent"""
+        cubesat.c_downlink += 1
 
     def handle_memory_buffered_message(self, header, response):
         """Handler function for the memory_buffered_message message type"""
