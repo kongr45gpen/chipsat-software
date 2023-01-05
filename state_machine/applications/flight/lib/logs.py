@@ -15,9 +15,9 @@ beacon_format = 3 * 'B' + 'H' + 'f' * 11
 
 # Defines what the unpack_beacon will return
 beacon_tuple = namedtuple("beacon_tuple", ("state_index", "datetime_valid_flag", "contact_flag",
-                                           "burn_flag", "software_error", "boot_count",
-                                           "vbatt", "cpu_temp", "imu_temp",
-                                           "gyro", "mag", "rssi", "fei"))
+                                           "burn_flag", "software_error_count", "boot_count",
+                                           "battery_voltage", "cpu_temperature_C", "imu_temperature_C",
+                                           "gyro", "mag", "RSSI_dB", "FEI_Hz"))
 
 # 6 float32
 # = 24 bytes of data
