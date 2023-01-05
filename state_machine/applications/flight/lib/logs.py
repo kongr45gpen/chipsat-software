@@ -6,19 +6,34 @@ except ImportError:
     from numpy import array, nan
 from pycubed import cubesat
 from state_machine import state_machine
+from collections import namedtuple
 
 # 3 uint8 + 1 uint16 + 11 float32
 # = 49 bytes of data
 # = 52 byte c struct (1 extra to align chars, 2 extra to align short)
 beacon_format = 3 * 'B' + 'H' + 'f' * 11
 
+# Defines what the unpack_beacon will return
+beacon_tuple = namedtuple("beacon_tuple", ("state_byte", "flags", "software_error",
+                                           "boot_count", "vbatt", "cpu_temp",
+                                           "imu_temp", "gyro", "mag",
+                                           "rssi", "fei"))
+
 # 6 float32
 # = 24 bytes of data
 system_format = 6 * 'f'
 
+# defines what the system_unpack will return
+system_tuple = namedtuple("system_tuple", ("lux_xp", "lux_yp", "lux_zp",
+                                           "lux_xn", "lux_yn", "lux_zn"))
 # 2 unint8
 # = 4 bytes
 time_format = 2 * 'H'
+
+# defines what the time_unpack will return
+time_tuple = namedtuple("time_tuple", ("tm_min", "tm_sec"))
+
+telemetry_tuple = namedtuple("telemetry_tuple", ("time", "beacon", "system"))
 
 def beacon_packet():
     """Creates a beacon packet containing the: state index byte, f_contact and f_burn flags,
@@ -71,7 +86,7 @@ def time_packet(t):
      tm_hour, tm_min, tm_sec,
      tm_wday, tm_yday, tm_isdst) = t
     return struct.pack(time_format,
-                       tm_min, tm_sec,)
+                       tm_min, tm_sec)
 
 def telemetry_packet(t):
     return bytearray(time_packet(t)) + bytearray(beacon_packet()) + bytearray(system_packet())
@@ -93,7 +108,6 @@ def try_mkdir(path):
 def unpack_beacon(bytes):
     """Unpacks the fields from the beacon packet packed by `beacon_packet`
     """
-
     (state_byte, flags, software_error, boot_count,
      vbatt, cpu_temp, imu_temp,
      gyro0, gyro1, gyro2,
@@ -103,37 +117,21 @@ def unpack_beacon(bytes):
     gyro = array([gyro0, gyro1, gyro2])
     mag = array([mag0, mag1, mag2])
 
-    return {"state_index": state_byte,
-            "contact_flag": bool(flags & (0b1 << 1)),
-            "burn_flag": bool(flags & (0b1 << 0)),
-            "software_error_count": software_error,
-            "boot_count": boot_count,
-            "battery_voltage": vbatt,
-            "cpu_temperature_C": cpu_temp,
-            "imu_temperature_C": imu_temp,
-            "gyro": gyro,
-            "mag": mag,
-            "RSSI_dB": rssi,
-            "FEI_Hz": fei,
-            }
+    return beacon_tuple(state_byte, flags, software_error,
+                        boot_count, vbatt, cpu_temp,
+                        imu_temp, gyro, mag,
+                        rssi, fei)
 
 
 def unpack_system(bytes):
     (lux_xp, lux_yp, lux_zp,
      lux_xn, lux_yn, lux_zn) = struct.unpack(system_format, bytes)
-    return {"lux_xp": lux_xp,
-            "lux_yp": lux_yp,
-            "lux_zp": lux_zp,
-            "lux_xn": lux_xn,
-            "lux_yn": lux_yn,
-            "lux_zn": lux_zn,
-            }
+    return system_tuple(lux_xp, lux_yp, lux_zp,
+                        lux_xn, lux_yn, lux_zn)
 
 def unpack_time(bytes):
     (tm_min, tm_sec) = struct.unpack(time_format, bytes)
-    return {"minutes": tm_min,
-            "seconds": tm_sec
-            }
+    return time_tuple(tm_min, tm_sec)
 
 def unpack_telemetry(bytes):
     time_buffer = struct.calcsize(time_format)
@@ -142,7 +140,4 @@ def unpack_telemetry(bytes):
     t = unpack_time(bytes[0:time_buffer])
     beacon = unpack_beacon(bytes[time_buffer:time_buffer + beacon_buffer])
     system = unpack_system(bytes[time_buffer + beacon_buffer:time_buffer + beacon_buffer + system_buffer])
-    return {"datetime": t,
-            "beacon": beacon,
-            "system": system,
-            }
+    return telemetry_tuple(t, beacon, system)

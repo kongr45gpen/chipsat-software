@@ -31,7 +31,6 @@ class task(Task):
             t = time.localtime()
         hour_stamp = f'{t.tm_year:04}.{t.tm_mon:02}.{t.tm_mday:02}.{t.tm_hour:02}'
         boot = cubesat.c_boot
-        print(boot)
         current_file = f"/sd/logs/telemetry/{boot:05}/{hour_stamp}"
         telemetry_packet = logs.telemetry_packet(t)
         file = open(current_file, "ab+")
