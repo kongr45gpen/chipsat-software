@@ -123,8 +123,8 @@ def unpack_beacon(bytes):
     gyro = array([gyro0, gyro1, gyro2])
     mag = array([mag0, mag1, mag2])
 
-    return beacon_tuple(state_byte, bool(flags & (0b1 >> 2)), bool(flags & (0b1 >> 1)),
-                        bool(flags & (0b1 >> 0)), software_error,
+    return beacon_tuple(state_byte, bool(flags & (0b1 << 2)), bool(flags & (0b1 << 1)),
+                        bool(flags & (0b1 << 0)), software_error,
                         boot_count, vbatt, cpu_temp,
                         imu_temp, gyro, mag,
                         rssi, fei)
