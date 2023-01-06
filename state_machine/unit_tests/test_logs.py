@@ -71,8 +71,8 @@ class TestLogs(unittest.TestCase):
         unpacked = unpack_telemetry(pkt)
 
         """Tests Time Values"""
-        self.assertEqual(tm_min_in, unpacked.t.tm_min)
-        self.assertEqual(tm_sec_in, unpacked.t.tm_sec)
+        self.assertEqual(tm_min_in, unpacked.time.tm_min)
+        self.assertEqual(tm_sec_in, unpacked.time.tm_sec)
 
         """Tests Beacon Values"""
         self.assertEqual(state_in, unpacked.beacon.state_index)
