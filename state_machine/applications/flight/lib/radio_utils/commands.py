@@ -184,7 +184,7 @@ def set_rtc_utime(task, args):
 
     :param task: The task that called this function
     :param args: The *unix time* to set the RTC to"""
-    utime = struct.unpack(args)
+    utime = struct.unpack('i', args)
     utime = utime[0]  # unpack returns a "tuple" with one element
     t = time.localtime(utime)
     cubesat.rtc.datetime = t
