@@ -3,8 +3,8 @@
 from Tasks.log import LogTask as Task
 from pycubed import cubesat
 import files
-import time
 import logs
+import time
 
 class task(Task):
     name = 'beacon'
@@ -18,17 +18,21 @@ class task(Task):
             return
 
         try:
-            self.write_beacon()
+            self.write_telemetry()
         except Exception:
-            files.mkdirp('/sd/logs/beacon/')
-            self.write_beacon()
+            boot = cubesat.c_boot
+            files.mkdirp(f'/sd/logs/telemetry/{boot:05}')
+            self.write_telemetry()
 
-    def write_beacon(self):
-        currTime = time.time()
-        TIMEINTERVAL = 1000
-        log_directory = "/sd/logs/"
-        current_file = f"{log_directory}beacon/{int(currTime//TIMEINTERVAL)}.txt"
-        beacon_packet = logs.beacon_packet()
+    def write_telemetry(self):
+        if cubesat.rtc:
+            t = cubesat.rtc.datetime
+        else:
+            t = time.localtime()
+        hour_stamp = f'{t.tm_year:04}.{t.tm_mon:02}.{t.tm_mday:02}.{t.tm_hour:02}'
+        boot = cubesat.c_boot
+        current_file = f"/sd/logs/telemetry/{boot:05}/{hour_stamp}"
+        telemetry_packet = logs.telemetry_packet(t)
         file = open(current_file, "ab+")
-        file.write(bytearray(beacon_packet))
+        file.write(telemetry_packet)
         file.close()

@@ -25,6 +25,16 @@ Define HardwareInitException
 class HardwareInitException(Exception):
     pass
 
+class rtc_device:
+    def __init__(self, date_input):
+        self.datetime = date_input
+
+    def update_time(self, date_input):
+        self.datetime = date_input
+
+class sun_sensor:
+    def __init__(self, lux):
+        self.lux = lux
 
 class _Satellite:
     # Define NVM flags
@@ -69,6 +79,8 @@ class _Satellite:
         self._torque = [0, 0, 0]
         self._cpu_temp = 30
         self._imu_temperature = 20
+        self._luxp = array([3.0, 1.0, 2.0])
+        self._luxn = array([2.0, 4.0, 7.0])
 
         # debug utilities
         self.sim = False
@@ -125,13 +137,15 @@ class _Satellite:
         print(f'log not implemented, tried to log: {str}')
 
     @property
-    def sun_vector(self):
-        """Returns the sun pointing vector in the body frame"""
-        return array([0, 0, 0])
-
-    @property
     def imu(self):
         return True
+
+    @property
+    def sun_vector(self):
+        """returns the sun pointing vector in the body frame"""
+        return array([self._luxp[0] - self._luxn[0],
+                      self._luxp[1] - self._luxn[1],
+                      self._luxp[2] - self._luxn[2]])
 
     @property
     def micro(self):
@@ -140,6 +154,34 @@ class _Satellite:
     @property
     def neopixel(self):
         return True
+
+    @property
+    def rtc(self):
+        return rtc_device(time.localtime())
+
+    @property
+    def sun_yn(self):
+        return sun_sensor(self._luxn[1])
+
+    @property
+    def sun_zn(self):
+        return sun_sensor(self._luxn[2])
+
+    @property
+    def sun_xn(self):
+        return sun_sensor(self._luxn[0])
+
+    @property
+    def sun_yp(self):
+        return sun_sensor(self._luxp[1])
+
+    @property
+    def sun_zp(self):
+        return sun_sensor(self._luxp[2])
+
+    @property
+    def sun_xp(self):
+        return sun_sensor(self._luxp[0])
 
     async def burn(self, dutycycle=0.5, duration=1):
         """
