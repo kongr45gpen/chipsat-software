@@ -25,7 +25,7 @@ class Message:
         str = self.str[:PACKET_DATA_LEN]
         pkt = bytearray(len(str) + 1)
         pkt[0] = self.header
-        pkt[1:] = self.str
+        pkt[1:] = str
         return pkt, self.with_ack
 
     def done(self):
