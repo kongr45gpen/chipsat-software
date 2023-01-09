@@ -153,11 +153,13 @@ class task(Task):
             except Exception as e:
                 self.debug(f'something went wrong: {e}')
                 msg = Message(0, f'{cmd} Error: {str(e).encode()}')
-                await cubesat.radio.send(msg.packet())
+                packet, _ = msg.packet()
+                await cubesat.radio.send(packet)
         else:
             self.debug('invalid command!')
             msg = Message(0, f'Invalid command: {cmd}')
-            await cubesat.radio.send(msg.packet())
+            packet, _ = msg.packet()
+            await cubesat.radio.send(packet)
 
     def handle_disk_buffered_message(self, header, response):
         """Handler function for the disk_buffered_message message type"""
