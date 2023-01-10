@@ -52,7 +52,7 @@ def rmrecursive(path, verbose=False):
     if verbose:
         print(f"Removed {path}")
 
-def filesystem_avail(fs_path):
+def filesystem_availability(fs_path):
     """
     return the fraction available of the filesystem at fs_path
     """
