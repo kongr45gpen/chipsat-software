@@ -51,3 +51,15 @@ def rmrecursive(path, verbose=False):
 
     if verbose:
         print(f"Removed {path}")
+
+def storage_stats(fs_path):
+    """
+    return the fraction used of the filesystem at fs_path
+    """
+
+    fs_storage_stats = os.statvfs(fs_path)
+    fs_storage_used = fs_storage_stats[3]
+    fs_storage_total = fs_storage_stats[2]
+    fs_usage = fs_storage_used / fs_storage_total
+
+    return fs_usage
