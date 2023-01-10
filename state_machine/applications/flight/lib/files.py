@@ -52,7 +52,7 @@ def rmrecursive(path, verbose=False):
     if verbose:
         print(f"Removed {path}")
 
-def storage_stats(fs_path):
+def filesystem_usage(fs_path):
     """
     return the fraction used of the filesystem at fs_path
     """
