@@ -5,9 +5,6 @@ import files
 import traceback
 import time
 
-log_fd = None
-log_fd_str = None
-
 class LogTask(Task):
 
     def debug(self, msg, level=1, log=False):
