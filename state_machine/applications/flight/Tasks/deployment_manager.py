@@ -33,7 +33,7 @@ class deployment_manager(Task):
             state_machine.switch_to('Normal')
         elif self.should_burn():
             self.last_burn = time.time()
-            if await cubesat.burn(duration=10, dutycycle=0.2):
+            if await cubesat.burn(duration=3, dutycycle=0.0031):
                 cubesat.f_burn = True
                 self.debug('Successfully burned')
             else:
