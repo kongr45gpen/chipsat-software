@@ -147,15 +147,12 @@ def delete_file(task, file):
         task.debug(f'Error deleting file: {e}')
         _downlink(f'Error deleting file: {e}')
 
-async def reload(task):
+def reload(task):
     """Reloads the flight software
 
     :param task: The task that called this function
     """
     task.debug('Reloading')
-    msg = bytearray([headers.DEFAULT])
-    msg.append(b'reset')
-    await cubesat.radio.send(data=msg)
     supervisor.reload()
 
 def request_beacon(task):
