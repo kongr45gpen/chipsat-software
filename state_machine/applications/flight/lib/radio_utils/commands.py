@@ -125,7 +125,7 @@ def copy_file(task, args):
     """
     try:
         args = json.loads(args)
-        with open(args[0], 'rb') as source, open(args[1], 'wb') as dest:
+        with open(args[0], 'rb') as source, open(args[1], 'cb') as dest:
             _cp(source, dest)
         task.debug('Sucess copying file')
         tq.push(Message(9, b'Success copying file'))
