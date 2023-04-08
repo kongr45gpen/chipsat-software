@@ -1,10 +1,67 @@
 from ulab.numpy import array
+from enum import Enum
 
-HARDWARE_VERSION = "B2/01"  # new flight boards (Dec 2022)
-# HARDWARE_VERSION = "B1/02" # Oct 2022
-# HARDWARE_VERSION = "B1/01" # Aug 2022
+HARDWARE_VERSION = "B3/01"      # April 2023
+# HARDWARE_VERSION = "B2/01"    # new flight boards (Dec 2022)
+# HARDWARE_VERSION = "B1/02"    # Oct 2022
+# HARDWARE_VERSION = "B1/01"    # Aug 2022
+
+class sun_type(Enum):
+    TSL2561 = 1
+    INA219 = 2
+
+
+class imu_type(Enum):
+    BMX160 = 1
+    BNO08X = 2
+
+
+if HARDWARE_VERSION == "B3/01":
+
+    SUN_TYPE = sun_type.INA219
+    IMU_TYPE = imu_type.BNO08X
+
+    SUN_XN_I2C = 3
+    SUN_XN_ADDRESS = 0x44
+
+    SUN_YN_I2C = 1
+    SUN_YN_ADDRESS = 0x44
+
+    SUN_ZN_I2C = 2
+    SUN_ZN_ADDRESS = 0x44
+
+    SUN_XP_I2C = 3
+    SUN_XP_ADDRESS = 0x45
+
+    SUN_YP_I2C = 1
+    SUN_YP_ADDRESS = 0x45
+
+    SUN_ZP_I2C = 2
+    SUN_ZP_ADDRESS = 0x45
+
+    COIL_X_I2C = 1
+    COIL_X_ADDRESS = 0x60
+
+    COIL_Y_I2C = 1
+    COIL_Y_ADDRESS = 0x61
+
+    COIL_Z_I2C = 1
+    COIL_Z_ADDRESS = 0x64
+
+    CURRENT_I2C = 1
+    CURRENT_ADDRESS = 0x40
+
+    RTC_I2C = 1
+
+    # IMU_I2C = 1
+    # IMU_ADDRESS = 0x69
+
+    R_IMU2BODY = array([[0., -1., 0.], [0., 0., 1.], [-1., 0., 0.]])
 
 if HARDWARE_VERSION == "B2/01":
+
+    SUN_TYPE = sun_type.TSL2561
+    IMU_TYPE = imu_type.BMX160
 
     SUN_XN_I2C = 3
     SUN_XN_ADDRESS = 0x29
@@ -42,6 +99,9 @@ if HARDWARE_VERSION == "B2/01":
 
 elif HARDWARE_VERSION == "B1/02":
 
+    SUN_TYPE = sun_type.TSL2561
+    IMU_TYPE = imu_type.BMX160
+
     SUN_XN_I2C = 3
     SUN_XN_ADDRESS = 0x29
 
@@ -77,6 +137,9 @@ elif HARDWARE_VERSION == "B1/02":
     R_IMU2BODY = array([[-1., 0., 0.], [0., 0., 1.], [0., 1., 0.]])
 
 elif HARDWARE_VERSION == "B1/01":
+
+    SUN_TYPE = sun_type.TSL2561
+    IMU_TYPE = imu_type.BMX160
 
     SUN_XN_I2C = 2
     SUN_XN_ADDRESS = 0x49
