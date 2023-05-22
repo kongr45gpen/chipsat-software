@@ -111,6 +111,7 @@ class _Satellite:
         self.sun_xp
         self.sun_yp
         self.sun_zp
+        self.current_sensor
         self.drv_x
         self.drv_y
         self.drv_z
@@ -162,7 +163,7 @@ class _Satellite:
     def sdcard(self):
         """ Define SD Parameters and initialize SD Card """
         try:
-            return sdcardio.SDCard(self.spi, board.CS_SD, baudrate=4000000)
+            return sdcardio.SDCard(self.spi, board.SD_CS, baudrate=4000000)
         except Exception as e:
             print('[ERROR][Initializing SD Card]', e)
 
@@ -371,7 +372,7 @@ class _Satellite:
         try:
             sensor = adafruit_ina219.INA219(
                 self.i2c(hw_config.CURRENT_I2C),
-                address=hw_config.CURRENT_ADDRESS)
+                addr=hw_config.CURRENT_ADDRESS)
             """ Calibrate the current sensor for __V and ___mA """
             sensor.set_py4_calibration()
             return sensor
