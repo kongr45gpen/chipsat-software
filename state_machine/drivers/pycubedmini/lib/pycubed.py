@@ -20,6 +20,7 @@ from bitflags import bitFlag, multiByte
 import configuration.hardware_configuration as hw_config
 import configuration.radio_configuration as rf_config
 import adafruit_tsl2561
+import adafruit_ina219
 import time
 import tasko
 from ulab.numpy import array, dot
@@ -363,6 +364,19 @@ class _Satellite:
             return rtc
         except Exception as e:
             print(f'[ERROR][Initializing RTC] {e}, ' +
+                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+
+    @device
+    def current_sensor(self):
+        try:
+            sensor = adafruit_ina219.INA219(
+                self.i2c(hw_config.CURRENT_I2C),
+                address=hw_config.CURRENT_ADDRESS)
+            """ Calibrate the current sensor for __V and ___mA """
+            sensor.set_calibration_16V_5A()
+            return sensor
+        except Exception as e:
+            print(f"[ERROR][INITIALIZING CURRENT] {e}, " +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
 
     def imuToBodyFrame(self, vec):
