@@ -498,7 +498,7 @@ class _Satellite:
         return self.neopixel[0]
 
     @property
-    def current(self):
+    def battery_current(self):
         """ return the current_sensor current reading in Milliamps """
         return self.current_sensor.current if self.current_sensor else None
 
