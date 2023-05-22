@@ -497,6 +497,11 @@ class _Satellite:
     def RGB(self):
         return self.neopixel[0]
 
+    @property
+    def current(self):
+        """ return the current_sensor current reading in Milliamps """
+        return self.current_sensor.current if self.current_sensor else None
+
     @RGB.setter
     def RGB(self, v):
         self.neopixel[0] = v
