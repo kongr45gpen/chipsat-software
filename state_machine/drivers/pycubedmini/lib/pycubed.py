@@ -373,7 +373,7 @@ class _Satellite:
                 self.i2c(hw_config.CURRENT_I2C),
                 address=hw_config.CURRENT_ADDRESS)
             """ Calibrate the current sensor for __V and ___mA """
-            sensor.set_calibration_16V_5A()
+            sensor.set_py4_calibration()
             return sensor
         except Exception as e:
             print(f"[ERROR][INITIALIZING CURRENT] {e}, " +
