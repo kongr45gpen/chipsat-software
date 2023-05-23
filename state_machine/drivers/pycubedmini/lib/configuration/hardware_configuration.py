@@ -1,6 +1,4 @@
 from ulab.numpy import array
-# from ulab.enum import Enum
-# from enum import Enum
 
 HARDWARE_VERSION = "B3/01"      # April 2023
 # HARDWARE_VERSION = "B2/01"    # new flight boards (Dec 2022)
