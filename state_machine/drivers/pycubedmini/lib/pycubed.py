@@ -20,6 +20,7 @@ from bitflags import bitFlag, multiByte
 import configuration.hardware_configuration as hw_config
 import configuration.radio_configuration as rf_config
 import adafruit_tsl2561
+import adafruit_ina219
 import time
 import tasko
 from ulab.numpy import array, dot
@@ -110,6 +111,7 @@ class _Satellite:
         self.sun_xp
         self.sun_yp
         self.sun_zp
+        self.current_sensor
         self.drv_x
         self.drv_y
         self.drv_z
@@ -161,7 +163,7 @@ class _Satellite:
     def sdcard(self):
         """ Define SD Parameters and initialize SD Card """
         try:
-            return sdcardio.SDCard(self.spi, board.CS_SD, baudrate=4000000)
+            return sdcardio.SDCard(self.spi, board.SD_CS, baudrate=4000000)
         except Exception as e:
             print('[ERROR][Initializing SD Card]', e)
 
@@ -365,6 +367,19 @@ class _Satellite:
             print(f'[ERROR][Initializing RTC] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
 
+    @device
+    def current_sensor(self):
+        try:
+            sensor = adafruit_ina219.INA219(
+                self.i2c(hw_config.CURRENT_I2C),
+                addr=hw_config.CURRENT_ADDRESS)
+            """ Calibrate the current sensor for __V and ___mA """
+            sensor.set_py4_calibration()
+            return sensor
+        except Exception as e:
+            print(f"[ERROR][INITIALIZING CURRENT] {e}, " +
+                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+
     def imuToBodyFrame(self, vec):
         return dot(hw_config.R_IMU2BODY, array(vec))
 
@@ -482,6 +497,11 @@ class _Satellite:
     @property
     def RGB(self):
         return self.neopixel[0]
+
+    @property
+    def battery_current(self):
+        """ return the current_sensor current reading in Milliamps """
+        return self.current_sensor.current if self.current_sensor else None
 
     @RGB.setter
     def RGB(self, v):
