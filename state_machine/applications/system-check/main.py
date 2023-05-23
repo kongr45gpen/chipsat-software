@@ -6,6 +6,7 @@ import tests.imu_test
 import tests.sun_sensor_test
 import tests.coil_test
 import tests.burnwire_test
+import tests.opt3001_sun_sensor_test
 from print_utils import bold, normal, red, green
 try:
     import supervisor
@@ -30,7 +31,8 @@ Each test group contains:
 all_tests = [
     ("SD Test", "sd", tests.sd_test, True),
     ("IMU Test", "imu", tests.imu_test, True),
-    ("Sun Sensor Test", "sun", tests.sun_sensor_test, True),
+    ("tsl2561 Sun Sensor Test", "sun", tests.sun_sensor_test, True),
+    ("opt3001 Sun Sensor Test", "new sun", tests.opt3001_sun_sensor_test, True),
     ("Coil Driver Test", "coil", tests.coil_test, True),
     ("Burnwire Test", "burn", tests.burnwire_test, False),
     ("I2C_Scan", "i2c", tests.i2c_scan, False),
