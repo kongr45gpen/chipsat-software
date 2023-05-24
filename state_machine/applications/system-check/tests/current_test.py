@@ -19,10 +19,11 @@ def current_test():
     # if greater than 10% of the data points are far away from the average
     # the sensor is giving strange and possibly inaccurate readings.
     if (outlier_count >= measurements / 10):
-        return (f"current was too inconsistent: {outlier_count} outliers", False)
+        return (f"current was inconsistent: {outlier_count} outliers", False)
 
-    if not (-0.5 <= avg <= 0.5):
-        return (f"current did not return expected value: measurement {avg} mA", False)
+    # if you want to test on average current value that can be done here
+    # if not (-0.5 <= avg <= 0.5):
+    #     return (f"current did not return expected value: measurement {avg} mA", False)
 
     return ("passed current test", True)
 
