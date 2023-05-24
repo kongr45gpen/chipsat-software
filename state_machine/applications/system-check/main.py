@@ -36,7 +36,7 @@ all_tests = [
     ("Burnwire Test", "burn", tests.burnwire_test, False),
     ("I2C_Scan", "i2c", tests.i2c_scan, False),
     ("Reset and Test NVM", "nvm", tests.nvm_access_test, True),
-    ("sensor rate test", "rate", tests.sensor_rate_rest, True),
+    ("sensor rate test", "rate", tests.sensor_rate_test, True),
 ]
 
 def test_options(tests):
