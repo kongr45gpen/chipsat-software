@@ -12,7 +12,7 @@ s = OPT3001(cubesat.i2c1, 0x45)
 import time
 from micropython import const
 from adafruit_bus_device.i2c_device import I2CDevice
-from adafruit_register.i2c_bits import ROBits, RWBits
+from adafruit_register.i2c_bits import RWBits
 from adafruit_register.i2c_bit import ROBit, RWBit
 
 RESULT = const(0x00)
@@ -62,7 +62,7 @@ class OPT3001:
         while time.monotonic() < _t:
             if self.rdy:
                 break
-            time.sleep(0.001)
+            time.sleep(0.1)
 
         # read and process the lux measurement
         self.read_u16(RESULT)
