@@ -62,7 +62,7 @@ class OPT3001:
         while time.monotonic() < _t:
             if self.rdy:
                 break
-            time.sleep(0.1)
+            time.sleep(0.01)
 
         # read and process the lux measurement
         self.read_u16(RESULT)
