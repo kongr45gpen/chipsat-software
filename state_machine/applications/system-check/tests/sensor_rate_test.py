@@ -6,24 +6,25 @@ except ImportError:
 from lib.pycubed import cubesat
 
 def sensor_rate_test(sensor, name):
-    trials = 10
-    li = [0.0] * 1000
+    trials = 1000
+    li = [0.0] * trials
     dt_list = array(li)
     if name == "IMU":
         for i in range(trials):
-            s_time = time.time()
+            s_time = time.monotonic_ns()
             _ = sensor.accel
-            e_time = time.time()
-            print(s_time - e_time)
-            dt_list[i] = s_time - e_time
+            _ = sensor.accel
+            _ = sensor.accel
+            e_time = time.monotonic_ns()
+            dt_list[i] = e_time - s_time
     else:
         for i in range(trials):
-            s_time = time.time()
+            s_time = time.monotonic_ns()
             _ = sensor.lux
-            e_time = time.time()
-            print(s_time - e_time)
-            dt_list[i] = s_time - e_time
-    print(dt_list)
+            _ = sensor.lux
+            _ = sensor.lux
+            e_time = time.monotonic_ns()
+            dt_list[i] = e_time - s_time
     worst_case = max(dt_list)
     best_case = min(dt_list)
     med_case = median(dt_list)
