@@ -14,13 +14,11 @@ def sensor_rate_test(sensor, name):
             s_time = time.monotonic_ns()
             _ = sensor.accel
             _ = sensor.accel
-            _ = sensor.accel
             e_time = time.monotonic_ns()
             dt_list[i] = e_time - s_time
     else:
         for i in range(trials):
             s_time = time.monotonic_ns()
-            _ = sensor.lux
             _ = sensor.lux
             _ = sensor.lux
             e_time = time.monotonic_ns()
@@ -32,7 +30,8 @@ def sensor_rate_test(sensor, name):
 
 async def run(result_dict):
     """
-    check the rates at which sensors are able to obtain their data
+    checks how fast the satellite can make two successive calls to a sensor
+    to get its data.
     """
     print("Testing sensor rates...\n")
     sensors = [
