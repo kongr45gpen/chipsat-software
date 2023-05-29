@@ -6,7 +6,7 @@ def current_test():
     Tests if the current sensor:
         - returns consistent values
         - (possible for future) has a reasonable average value
-            - need to know how many mA the satellite should be running at on idle.
+                - need to know how many mA the satellite should be running at on idle.
     """
     measurements = 100
     vals = [0] * measurements
