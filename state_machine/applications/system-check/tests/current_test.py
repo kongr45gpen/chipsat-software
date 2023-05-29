@@ -2,18 +2,27 @@ from lib.pycubed import cubesat
 import time
 
 def current_test():
+    """
+    Tests if the current sensor:
+        - returns consistent values
+        - (possible for future) has a reasonable average value
+            - need to know how many mA the satellite should be running at on idle.
+    """
     measurements = 100
     vals = [0] * measurements
     outlier_count = 0
+
+    # threshold in mA, such that a measurement counts as an outlier
+    outlier_threshold = 2
     for i in range(measurements):
         vals[i] = cubesat.battery_current
         time.sleep(0.05)
     sum = 0
     for val in vals:
         sum += val
-    avg = sum / 100
+    avg = sum / measurements
     for val in vals:
-        if not ((avg - 2) <= val <= (avg + 2)):
+        if not ((avg - outlier_threshold) <= val <= (avg + outlier_threshold)):
             outlier_count += 1
 
     # if greater than 10% of the data points are far away from the average
@@ -21,11 +30,7 @@ def current_test():
     if (outlier_count >= measurements / 10):
         return (f"current was inconsistent: {outlier_count} outliers", False)
 
-    # if you want to test on average current value that can be done here
-    # if not (-0.5 <= avg <= 0.5):
-    #     return (f"current did not return expected value: measurement {avg} mA", False)
-
-    return ("passed current test", True)
+    return (f"passed current test, average {avg} mA", True)
 
 
 def manual_test():
