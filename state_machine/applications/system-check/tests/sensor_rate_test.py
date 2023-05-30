@@ -5,15 +5,15 @@ except ImportError:
     from numpy import array, median
 from lib.pycubed import cubesat
 
-def sensor_rate_test(sensor, name):
+def sensor_rate_test(sensor):
     trials = 100
     li = [0.0] * trials
     dt_list = array(li)
     for i in range(trials):
-        s_time = time.monotonic()
+        s_time = time.monotonic_ns()
         _ = sensor
         _ = sensor
-        e_time = time.monotonic()
+        e_time = time.monotonic_ns()
         dt_list[i] = e_time - s_time
     worst_case = max(dt_list)
     best_case = min(dt_list)
@@ -38,6 +38,6 @@ async def run(result_dict):
         (cubesat.imu.mag, "IMU_MAG"),
     ]
     for (sensor, name) in sensors:
-        result_dict[f"{name}_rate_test"] = sensor_rate_test(sensor, name)
+        result_dict[f"{name}_rate_test"] = sensor_rate_test(sensor)
 
     print("Done testing Sensor rates\n")
