@@ -47,7 +47,7 @@ class OPT3001:
 
         # CONFIGURE
         self.range_number = 0b1100  # auto ranging
-        self.conv_800ms   = True   # 800ms conversion time
+        self.conv_800ms   = False   # 100ms conversion time
         self.mode = 0b11           # continuous conversions
 
     def read_u16(self, addr):
@@ -55,6 +55,7 @@ class OPT3001:
         with self.i2c_device as i2c:
             i2c.write_then_readinto(self.buf, self.buf, out_end=1, in_start=0)
 
+    @property
     def lux(self):
         """LUX value of sun-sensor. Could have delay up to chosen conversion time (800 or 100ms)"""
         # wait until the lux measurement is ready

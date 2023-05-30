@@ -253,7 +253,7 @@ class _Satellite:
                 return adafruit_tsl2561.TSL2561(
                     self.i2c(hw_config.SUN_YN_I2C),
                     address=hw_config.SUN_YN_ADDRESS)
-            elif hw_config.SUN_TYPE:
+            elif hw_config.SUN_TYPE == 2:
                 return opt3001.OPT3001(
                     self.i2c(hw_config.SUN_YN_I2C),
                     address=hw_config.SUN_YN_ADDRESS)
@@ -492,16 +492,10 @@ class _Satellite:
     @property
     def sun_vector(self):
         """Returns the sun pointing vector in the body frame"""
-        if hw_config.SUN_TYPE == 1:
-            return array(
-                [self.sun_xp.lux - self.sun_xn.lux,
-                 self.sun_yp.lux - self.sun_yn.lux,
-                 self.sun_zp.lux - self.sun_zn.lux])
-        elif hw_config.SUN_TYPE == 2:
-            return array(
-                [self.sun_xp.lux() - self.sun_xn.lux(),
-                 self.sun_yp.lux() - self.sun_yn.lux(),
-                 self.sun_zp.lux() - self.sun_zn.lux()])
+        return array(
+            [self.sun_xp.lux - self.sun_xn.lux,
+                self.sun_yp.lux - self.sun_yn.lux,
+                self.sun_zp.lux - self.sun_zn.lux])
 
     async def burn(self, dutycycle=0.0031, duration=3):
         """
