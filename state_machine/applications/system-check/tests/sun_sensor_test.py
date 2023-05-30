@@ -27,7 +27,6 @@ def consistency_test():
     totals = [0, 0, 0]
     for i in range(trials):
         sv = cubesat.sun_vector
-        print(sv)
         entries[i] = sv
         totals[0] += sv[0]
         totals[1] += sv[1]
