@@ -1,20 +1,19 @@
 import time
 try:
-    from ulab.numpy import array, median
+    from ulab.numpy import zeros, median
 except ImportError:
-    from numpy import array, median
+    from numpy import zeros, median
 from lib.pycubed import cubesat
 
 def sensor_rate_test(sensor):
     trials = 100
-    li = [0.0] * trials
-    dt_list = array(li)
+    dt_list = zeros(trials)
     for i in range(trials):
-        s_time = time.monotonic_ns()
+        start_time = time.monotonic_ns()
         _ = sensor
         _ = sensor
-        e_time = time.monotonic_ns()
-        dt_list[i] = e_time - s_time
+        end_time = time.monotonic_ns()
+        dt_list[i] = end_time - start_time
     worst_case = max(dt_list)
     best_case = min(dt_list)
     med_case = median(dt_list)
