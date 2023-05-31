@@ -33,13 +33,6 @@ def current_test():
     return (f"passed current test, average {avg} mA", True)
 
 
-def manual_test():
-    for _ in range(10000):
-        print(cubesat.battery_current)
-        time.sleep(0.01)
-    return ("test complete", True)
-
-
 async def run(result_dict):
     """
     basic current sensor test to verify that the hardware is connected
