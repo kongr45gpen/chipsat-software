@@ -30,7 +30,7 @@ Each test group contains:
 all_tests = [
     ("SD Test", "sd", tests.sd_test, True),
     ("IMU Test", "imu", tests.imu_test, True),
-    ("tsl2561 Sun Sensor Test", "sun", tests.sun_sensor_test, True),
+    ("Sun Sensor Test", "sun", tests.sun_sensor_test, True),
     ("Coil Driver Test", "coil", tests.coil_test, True),
     ("Burnwire Test", "burn", tests.burnwire_test, False),
     ("I2C_Scan", "i2c", tests.i2c_scan, False),

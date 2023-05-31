@@ -9,7 +9,6 @@ from opt3001 import OPT3001
 s = OPT3001(cubesat.i2c1, 0x45)
 """
 
-import time
 from micropython import const
 from adafruit_bus_device.i2c_device import I2CDevice
 from adafruit_register.i2c_bits import RWBits
@@ -57,14 +56,7 @@ class OPT3001:
 
     @property
     def lux(self):
-        """LUX value of sun-sensor. Could have delay up to chosen conversion time (800 or 100ms)"""
-        # wait until the lux measurement is ready
-        _t = time.monotonic() + 1.1
-        while time.monotonic() < _t:
-            if self.rdy:
-                break
-            time.sleep(0.01)
-
+        """LUX value of sun-sensor"""
         # read and process the lux measurement
         self.read_u16(RESULT)
 
@@ -78,12 +70,3 @@ class OPT3001:
         lux = lsb_size * fractional_result
 
         return lux
-
-    def raw_lux(self, buff):
-        """
-        Reading when not ready just gives last value,
-        so don't check for rdy flag here
-        """
-        with self.i2c_device as i2c:
-            # result reg = 0x00
-            i2c.write_then_readinto(b'\x00', buff, in_end=2)
