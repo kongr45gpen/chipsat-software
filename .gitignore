@@ -45,3 +45,6 @@ sha.py
 build/
 state_machine/build/
 state_machine/output/*
+
+# macos metadata files
+.DS_store
