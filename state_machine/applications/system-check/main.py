@@ -6,6 +6,7 @@ import tests.imu_test
 import tests.sun_sensor_test
 import tests.coil_test
 import tests.burnwire_test
+import tests.sensor_rate_test
 from print_utils import bold, normal, red, green
 try:
     import supervisor
@@ -35,6 +36,7 @@ all_tests = [
     ("Burnwire Test", "burn", tests.burnwire_test, False),
     ("I2C_Scan", "i2c", tests.i2c_scan, False),
     ("Reset and Test NVM", "nvm", tests.nvm_access_test, True),
+    ("sensor rate test", "rate", tests.sensor_rate_test, True),
 ]
 
 def test_options(tests):
