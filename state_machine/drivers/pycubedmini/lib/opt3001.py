@@ -45,7 +45,7 @@ class OPT3001:
             raise Exception("ERROR: Could not read correct manufacturer ID from bus provided")
 
         # CONFIGURE
-        self.range_number = 0b1100  # auto ranging
+        self.range_number = 0b1000  # 2.56 to 10483.20 lux range
         self.conv_800ms   = False   # 100ms conversion time
         self.mode = 0b11           # continuous conversions
 
@@ -61,12 +61,12 @@ class OPT3001:
         self.read_u16(RESULT)
 
         exponent = (self.buf[0] >> 4) & ((1 << 4) - 1)  # E[3:0]
-        fractional_result = (self.buf[0] >> 4) & ((1 << 0) - 1)  # R[12:9]
+        fractional_result = (self.buf[0]) & ((1 << 4) - 1)  # R[11:8]
         fractional_result << 8  # pad in order to add the rest of the mantissa
-        fractional_result += self.buf[1]  # R[8:1]
+        fractional_result += self.buf[1]  # R[7:0]
 
         # Formulas used below are from opt3001 datasheet
-        lsb_size = 0.01 * 2 ** exponent
+        lsb_size = 0.01 * (2 ** exponent)
         lux = lsb_size * fractional_result
 
         return lux
