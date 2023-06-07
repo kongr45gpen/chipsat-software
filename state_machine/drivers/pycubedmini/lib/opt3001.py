@@ -62,7 +62,7 @@ class OPT3001:
 
         exponent = (self.buf[0] >> 4) & ((1 << 4) - 1)  # E[3:0]
         fractional_result = (self.buf[0]) & ((1 << 4) - 1)  # R[11:8]
-        fractional_result << 8  # pad in order to add the rest of the mantissa
+        fractional_result = fractional_result << 8  # pad in order to add the rest of the mantissa
         fractional_result += self.buf[1]  # R[7:0]
 
         # Formulas used below are from opt3001 datasheet
