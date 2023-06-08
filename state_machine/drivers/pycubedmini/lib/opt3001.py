@@ -1,6 +1,7 @@
 """
 CircuitPython driver for the OPT3001 ambient light sensor
 M. Holliday
+T. Damiani
 
      GND  3V3  SDA  SCL
 ADDR 0x44 0x45 0x46 0x47
