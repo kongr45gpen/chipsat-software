@@ -46,7 +46,7 @@ class OPT3001:
             raise Exception("ERROR: Could not read correct manufacturer ID from bus provided")
 
         # CONFIGURE
-        self.range_number = 0b1000  # 2.56 to 10483.20 lux range
+        self.range_number = 0b1100  # automatic lux range
         self.conv_800ms   = False   # 100ms conversion time
         self.mode = 0b11           # continuous conversions
 
