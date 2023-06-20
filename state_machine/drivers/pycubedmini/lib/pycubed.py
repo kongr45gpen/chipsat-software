@@ -534,7 +534,7 @@ class _Satellite:
 
     @property
     def battery_current(self):
-        """ return the current_sensor current reading in Milliamps """
+        """ return the current_sensor current reading in milliamps """
         return self.current_sensor.current if self.current_sensor else None
 
     @RGB.setter

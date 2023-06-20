@@ -2,12 +2,6 @@
 CircuitPython driver for the OPT3001 ambient light sensor
 M. Holliday
 T. Damiani
-
-     GND  3V3  SDA  SCL
-ADDR 0x44 0x45 0x46 0x47
-
-from opt3001 import OPT3001
-s = OPT3001(cubesat.i2c1, 0x45)
 """
 
 from micropython import const
