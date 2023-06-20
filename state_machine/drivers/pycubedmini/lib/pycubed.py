@@ -193,11 +193,11 @@ class _Satellite:
     def imu(self):
         """ Define IMU parameters and initialize """
         try:
-            if hw_config.IMU_TYPE == 1:
+            if hw_config.IMU_TYPE == hw_config.IMU_TYPE_BMX160:
                 return bmx160.BMX160_I2C(
                     self.i2c(hw_config.IMU_I2C),
                     address=hw_config.IMU_ADDRESS)
-            elif hw_config.IMU_TYPE == 2:
+            elif hw_config.IMU_TYPE == hw_config.IMU_TYPE_BNO08X:
                 return None
         except Exception as e:
             print(f'[ERROR][Initializing IMU] {e}, ' +
@@ -249,11 +249,11 @@ class _Satellite:
     def sun_yn(self):
         """ Initialize the -Y sun sensor """
         try:
-            if hw_config.SUN_TYPE == 1:
+            if hw_config.SUN_TYPE == hw_config.SUN_TYPE_TSL2561:
                 return adafruit_tsl2561.TSL2561(
                     self.i2c(hw_config.SUN_YN_I2C),
                     address=hw_config.SUN_YN_ADDRESS)
-            elif hw_config.SUN_TYPE == 2:
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
                 return opt3001.OPT3001(
                     self.i2c(hw_config.SUN_YN_I2C),
                     address=hw_config.SUN_YN_ADDRESS)
@@ -265,11 +265,11 @@ class _Satellite:
     def sun_zn(self):
         """ Initialize the -Z sun sensor """
         try:
-            if hw_config.SUN_TYPE == 1:
+            if hw_config.SUN_TYPE == hw_config.SUN_TYPE_TSL2561:
                 return adafruit_tsl2561.TSL2561(
                     self.i2c(hw_config.SUN_ZN_I2C),
                     address=hw_config.SUN_ZN_ADDRESS)
-            elif hw_config.SUN_TYPE == 2:
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
                 return opt3001.OPT3001(
                     self.i2c(hw_config.SUN_ZN_I2C),
                     address=hw_config.SUN_ZN_ADDRESS)
@@ -281,11 +281,11 @@ class _Satellite:
     def sun_xn(self):
         """ Initialize the -X sun sensor """
         try:
-            if hw_config.SUN_TYPE == 1:
+            if hw_config.SUN_TYPE == hw_config.SUN_TYPE_TSL2561:
                 return adafruit_tsl2561.TSL2561(
                     self.i2c(hw_config.SUN_XN_I2C),
                     address=hw_config.SUN_XN_ADDRESS)
-            elif hw_config.SUN_TYPE == 2:
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
                 return opt3001.OPT3001(
                     self.i2c(hw_config.SUN_XN_I2C),
                     address=hw_config.SUN_XN_ADDRESS)
@@ -297,11 +297,11 @@ class _Satellite:
     def sun_yp(self):
         """ Initialize the +Y sun sensor """
         try:
-            if hw_config.SUN_TYPE == 1:
+            if hw_config.SUN_TYPE == hw_config.SUN_TYPE_TSL2561:
                 return adafruit_tsl2561.TSL2561(
                     self.i2c(hw_config.SUN_YP_I2C),
                     address=hw_config.SUN_YP_ADDRESS)
-            elif hw_config.SUN_TYPE == 2:
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
                 return opt3001.OPT3001(
                     self.i2c(hw_config.SUN_YP_I2C),
                     address=hw_config.SUN_YP_ADDRESS)
@@ -313,11 +313,11 @@ class _Satellite:
     def sun_zp(self):
         """ Initialize the +Z sun sensor """
         try:
-            if hw_config.SUN_TYPE == 1:
+            if hw_config.SUN_TYPE == hw_config.SUN_TYPE_TSL2561:
                 return adafruit_tsl2561.TSL2561(
                     self.i2c(hw_config.SUN_ZP_I2C),
                     address=hw_config.SUN_ZP_ADDRESS)
-            elif hw_config.SUN_TYPE == 2:
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
                 return opt3001.OPT3001(
                     self.i2c(hw_config.SUN_ZP_I2C),
                     address=hw_config.SUN_ZP_ADDRESS)
@@ -329,11 +329,11 @@ class _Satellite:
     def sun_xp(self):
         """ Initialize the +X sun sensor """
         try:
-            if hw_config.SUN_TYPE == 1:
+            if hw_config.SUN_TYPE == hw_config.SUN_TYPE_TSL2561:
                 return adafruit_tsl2561.TSL2561(
                     self.i2c(hw_config.SUN_XP_I2C),
                     address=hw_config.SUN_XP_ADDRESS)
-            elif hw_config.SUN_TYPE == 2:
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
                 return opt3001.OPT3001(
                     self.i2c(hw_config.SUN_XP_I2C),
                     address=hw_config.SUN_XP_ADDRESS)
