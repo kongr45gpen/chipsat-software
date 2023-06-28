@@ -15,11 +15,13 @@ import neopixel
 import pwmio
 import bmx160
 import drv8830
+import opt3001
 from adafruit_pcf8523 import PCF8523
 from bitflags import bitFlag, multiByte
 import configuration.hardware_configuration as hw_config
 import configuration.radio_configuration as rf_config
 import adafruit_tsl2561
+import adafruit_ina219
 import time
 import tasko
 from ulab.numpy import array, dot
@@ -110,6 +112,7 @@ class _Satellite:
         self.sun_xp
         self.sun_yp
         self.sun_zp
+        self.current_sensor
         self.drv_x
         self.drv_y
         self.drv_z
@@ -161,7 +164,7 @@ class _Satellite:
     def sdcard(self):
         """ Define SD Parameters and initialize SD Card """
         try:
-            return sdcardio.SDCard(self.spi, board.CS_SD, baudrate=4000000)
+            return sdcardio.SDCard(self.spi, board.SD_CS, baudrate=4000000)
         except Exception as e:
             print('[ERROR][Initializing SD Card]', e)
 
@@ -190,9 +193,12 @@ class _Satellite:
     def imu(self):
         """ Define IMU parameters and initialize """
         try:
-            return bmx160.BMX160_I2C(
-                self.i2c(hw_config.IMU_I2C),
-                address=hw_config.IMU_ADDRESS)
+            if hw_config.IMU_TYPE == hw_config.IMU_TYPE_BMX160:
+                return bmx160.BMX160_I2C(
+                    self.i2c(hw_config.IMU_I2C),
+                    address=hw_config.IMU_ADDRESS)
+            elif hw_config.IMU_TYPE == hw_config.IMU_TYPE_BNO08X:
+                return None
         except Exception as e:
             print(f'[ERROR][Initializing IMU] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -243,9 +249,14 @@ class _Satellite:
     def sun_yn(self):
         """ Initialize the -Y sun sensor """
         try:
-            return adafruit_tsl2561.TSL2561(
-                self.i2c(hw_config.SUN_YN_I2C),
-                address=hw_config.SUN_YN_ADDRESS)
+            if hw_config.SUN_TYPE == hw_config.SUN_TYPE_TSL2561:
+                return adafruit_tsl2561.TSL2561(
+                    self.i2c(hw_config.SUN_YN_I2C),
+                    address=hw_config.SUN_YN_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
+                return opt3001.OPT3001(
+                    self.i2c(hw_config.SUN_YN_I2C),
+                    address=hw_config.SUN_YN_ADDRESS)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor -Y] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -254,9 +265,14 @@ class _Satellite:
     def sun_zn(self):
         """ Initialize the -Z sun sensor """
         try:
-            return adafruit_tsl2561.TSL2561(
-                self.i2c(hw_config.SUN_ZN_I2C),
-                address=hw_config.SUN_ZN_ADDRESS)
+            if hw_config.SUN_TYPE == hw_config.SUN_TYPE_TSL2561:
+                return adafruit_tsl2561.TSL2561(
+                    self.i2c(hw_config.SUN_ZN_I2C),
+                    address=hw_config.SUN_ZN_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
+                return opt3001.OPT3001(
+                    self.i2c(hw_config.SUN_ZN_I2C),
+                    address=hw_config.SUN_ZN_ADDRESS)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor -Z] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -265,9 +281,14 @@ class _Satellite:
     def sun_xn(self):
         """ Initialize the -X sun sensor """
         try:
-            return adafruit_tsl2561.TSL2561(
-                self.i2c(hw_config.SUN_XN_I2C),
-                address=hw_config.SUN_XN_ADDRESS)
+            if hw_config.SUN_TYPE == hw_config.SUN_TYPE_TSL2561:
+                return adafruit_tsl2561.TSL2561(
+                    self.i2c(hw_config.SUN_XN_I2C),
+                    address=hw_config.SUN_XN_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
+                return opt3001.OPT3001(
+                    self.i2c(hw_config.SUN_XN_I2C),
+                    address=hw_config.SUN_XN_ADDRESS)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor -X] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -276,9 +297,14 @@ class _Satellite:
     def sun_yp(self):
         """ Initialize the +Y sun sensor """
         try:
-            return adafruit_tsl2561.TSL2561(
-                self.i2c(hw_config.SUN_YP_I2C),
-                address=hw_config.SUN_YP_ADDRESS)
+            if hw_config.SUN_TYPE == hw_config.SUN_TYPE_TSL2561:
+                return adafruit_tsl2561.TSL2561(
+                    self.i2c(hw_config.SUN_YP_I2C),
+                    address=hw_config.SUN_YP_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
+                return opt3001.OPT3001(
+                    self.i2c(hw_config.SUN_YP_I2C),
+                    address=hw_config.SUN_YP_ADDRESS)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor +Y] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -287,9 +313,14 @@ class _Satellite:
     def sun_zp(self):
         """ Initialize the +Z sun sensor """
         try:
-            return adafruit_tsl2561.TSL2561(
-                self.i2c(hw_config.SUN_ZP_I2C),
-                address=hw_config.SUN_ZP_ADDRESS)
+            if hw_config.SUN_TYPE == hw_config.SUN_TYPE_TSL2561:
+                return adafruit_tsl2561.TSL2561(
+                    self.i2c(hw_config.SUN_ZP_I2C),
+                    address=hw_config.SUN_ZP_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
+                return opt3001.OPT3001(
+                    self.i2c(hw_config.SUN_ZP_I2C),
+                    address=hw_config.SUN_ZP_ADDRESS)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor +Z] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -298,9 +329,14 @@ class _Satellite:
     def sun_xp(self):
         """ Initialize the +X sun sensor """
         try:
-            return adafruit_tsl2561.TSL2561(
-                self.i2c(hw_config.SUN_XP_I2C),
-                address=hw_config.SUN_XP_ADDRESS)
+            if hw_config.SUN_TYPE == hw_config.SUN_TYPE_TSL2561:
+                return adafruit_tsl2561.TSL2561(
+                    self.i2c(hw_config.SUN_XP_I2C),
+                    address=hw_config.SUN_XP_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
+                return opt3001.OPT3001(
+                    self.i2c(hw_config.SUN_XP_I2C),
+                    address=hw_config.SUN_XP_ADDRESS)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor +X] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -363,6 +399,19 @@ class _Satellite:
             return rtc
         except Exception as e:
             print(f'[ERROR][Initializing RTC] {e}, ' +
+                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+
+    @device
+    def current_sensor(self):
+        try:
+            sensor = adafruit_ina219.INA219(
+                self.i2c(hw_config.CURRENT_I2C),
+                addr=hw_config.CURRENT_ADDRESS)
+            """ Calibrate the current sensor for __V and ___mA """
+            sensor.set_py4_calibration()
+            return sensor
+        except Exception as e:
+            print(f"[ERROR][INITIALIZING CURRENT] {e}, " +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
 
     def imuToBodyFrame(self, vec):
@@ -445,8 +494,8 @@ class _Satellite:
         """Returns the sun pointing vector in the body frame"""
         return array(
             [self.sun_xp.lux - self.sun_xn.lux,
-             self.sun_yp.lux - self.sun_yn.lux,
-             self.sun_zp.lux - self.sun_zn.lux])
+                self.sun_yp.lux - self.sun_yn.lux,
+                self.sun_zp.lux - self.sun_zn.lux])
 
     async def burn(self, dutycycle=0.0031, duration=3):
         """
@@ -482,6 +531,11 @@ class _Satellite:
     @property
     def RGB(self):
         return self.neopixel[0]
+
+    @property
+    def battery_current(self):
+        """ return the current_sensor current reading in milliamps """
+        return self.current_sensor.current if self.current_sensor else None
 
     @RGB.setter
     def RGB(self, v):
