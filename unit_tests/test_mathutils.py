@@ -2,7 +2,7 @@ import unittest
 import sys
 from numpy import testing, array, zeros, eye, ones
 
-sys.path.insert(0, './state_machine/applications/flight')
+sys.path.insert(0, './applications/flight')
 
 from lib.mathutils import hat, quaternion_to_left_matrix, block, quaternion_to_rotation_matrix, quaternion_mul
 

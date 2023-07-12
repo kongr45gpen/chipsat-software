@@ -2,9 +2,9 @@ import unittest
 import sys
 from numpy import testing
 
-sys.path.insert(0, './state_machine/drivers/emulation')
-sys.path.insert(0, './state_machine/applications/flight')
-sys.path.insert(0, './state_machine/frame')
+sys.path.insert(0, './drivers/emulation')
+sys.path.insert(0, './applications/flight')
+sys.path.insert(0, './frame')
 
 from lib.control import bcross
 

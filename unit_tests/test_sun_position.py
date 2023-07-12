@@ -2,7 +2,7 @@ import unittest
 import sys
 from testutils import assert_vector_similar, timestamp
 
-sys.path.insert(0, './state_machine/applications/flight')
+sys.path.insert(0, './applications/flight')
 
 from lib.sun_position import approx_sun_position_ECI
 

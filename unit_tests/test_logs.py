@@ -3,10 +3,10 @@ import sys
 from numpy import testing, array
 import time
 
-sys.path.insert(0, './state_machine/drivers/emulation')
-sys.path.insert(0, './state_machine/drivers/emulation/lib')
-sys.path.insert(0, './state_machine/applications/flight')
-sys.path.insert(0, './state_machine/frame')
+sys.path.insert(0, './drivers/emulation')
+sys.path.insert(0, './drivers/emulation/lib')
+sys.path.insert(0, './applications/flight')
+sys.path.insert(0, './frame')
 
 from lib.logs import telemetry_packet, unpack_telemetry
 from pycubed import cubesat

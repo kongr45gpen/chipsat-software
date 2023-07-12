@@ -1,11 +1,11 @@
 import sys
 from unittest import IsolatedAsyncioTestCase
 
-sys.path.insert(0, './state_machine/drivers/emulation/lib')
-sys.path.insert(0, './state_machine/drivers/emulation/')
-sys.path.insert(0, './state_machine/applications/flight')
-sys.path.insert(0, './state_machine/applications/flight/lib')
-sys.path.insert(0, './state_machine/frame/')
+sys.path.insert(0, './drivers/emulation/lib')
+sys.path.insert(0, './drivers/emulation/')
+sys.path.insert(0, './applications/flight')
+sys.path.insert(0, './applications/flight/lib')
+sys.path.insert(0, './frame/')
 
 import Tasks.radio as radio
 import radio_utils.commands as cdh

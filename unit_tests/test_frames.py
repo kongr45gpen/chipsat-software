@@ -4,7 +4,7 @@ from numpy import array, cos, sin, pi, testing
 from numpy.linalg import norm
 from datetime import datetime as dt, timezone
 
-sys.path.insert(0, './state_machine/applications/flight')
+sys.path.insert(0, './applications/flight')
 
 import lib.frames as frames
 

@@ -2,7 +2,7 @@ import unittest
 import sys
 from numpy import testing, array, eye
 
-sys.path.insert(0, './state_machine/applications/flight')
+sys.path.insert(0, './applications/flight')
 
 import lib.mekf as mekf
 

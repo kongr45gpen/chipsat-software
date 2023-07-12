@@ -1,7 +1,7 @@
 import unittest
 import sys
 
-sys.path.insert(0, './state_machine/applications/flight/lib/')
+sys.path.insert(0, './applications/flight/lib/')
 
 from radio_utils.memory_buffered_message import MemoryBufferedMessage
 import radio_utils.headers as headers

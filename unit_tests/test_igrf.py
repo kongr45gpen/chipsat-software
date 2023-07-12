@@ -3,7 +3,7 @@ import sys
 import numpy as np
 from testutils import timestamp, assert_vector_similar
 
-sys.path.insert(0, './state_machine/applications/flight')
+sys.path.insert(0, './applications/flight')
 
 from lib.IGRF import igrf, igrf_eci
 

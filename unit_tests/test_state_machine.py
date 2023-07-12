@@ -1,7 +1,7 @@
 import unittest
 import sys
 
-sys.path.insert(0, './state_machine/frame')
+sys.path.insert(0, './frame')
 
 from lib.state_machine_utils import validate_config
 
