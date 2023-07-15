@@ -85,7 +85,7 @@ class _Satellite:
         # debug utilities
         self.sim = False
         self.randomize_voltage = False
-        self.sdcard = SD()
+        self.sdcard = None
         self.vfs = None
 
     @property
