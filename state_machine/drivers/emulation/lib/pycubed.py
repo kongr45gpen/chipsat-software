@@ -4,7 +4,7 @@ import tasko
 import lib.reader as reader
 from lib.bitflags import bitFlag, multiByte, nvm
 from lib.radio_driver import Radio
-from lib.sd import SD
+# from lib.sd import SD
 import random
 try:
     from ulab.numpy import array

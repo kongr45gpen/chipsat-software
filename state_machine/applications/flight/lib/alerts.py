@@ -5,4 +5,3 @@ class BaseAlert:
 
     def set(self, value):
         self.state = value
-
