@@ -1,4 +1,5 @@
 import sys
+import unittest
 from unittest import IsolatedAsyncioTestCase
 
 sys.path.insert(0, './state_machine/drivers/emulation/lib')
@@ -10,13 +11,14 @@ sys.path.insert(0, './state_machine/frame/')
 import Tasks.radio as radio
 import radio_utils.commands as cdh
 from state_machine import state_machine
-from testutils import send_cmd, CaptureDownlinks
+from testutils import send_cmd
 from radio_utils import transmission_queue as tq
 from radio_utils import message
 from pycubed import cubesat
+import settings
 Message = message.Message
 
-radio.ANTENNA_ATTACHED = True
+settings.TX_ALLLOWED = True
 state_machine.state = 'Debug'
 
 cubesat.radio._rx_time_bias = 0.0
@@ -25,32 +27,49 @@ cubesat.radio._rx_time_dev = 0.0
 class CommandTests(IsolatedAsyncioTestCase):
 
     async def test_query(self):
-        await self.cmd_test(cdh.QUERY, b'5+5', '10')
-        await self.cmd_test(cdh.QUERY, b'12*12', '144')
+        settings.TX_ALLOWED = True
+        cubesat.radio.debug.reset()
+        rt = radio.task()
+
+        await self.cmd_test(rt, cdh.QUERY, b'5+5', b'10')
+        await self.cmd_test(rt, cdh.QUERY, b'12*12', b'144')
 
     async def test_tq_len(self):
-        await self.cmd_test(cdh.TQ_SIZE, b'', '0')
+        settings.TX_ALLOWED = True
+        cubesat.radio.debug.reset()
+        rt = radio.task()
+
+        await self.cmd_test(rt, cdh.TQ_SIZE, b'', b'0')
 
     async def test_tq_clear(self):
+        settings.TX_ALLOWED = True
+        cubesat.radio.debug.reset()
+        rt = radio.task()
+
         # clog tx queue
-        await send_cmd(cdh.EXEC_PY, b"for _ in range(10):\n\ttq.push(Message(5, b'hello'))")
+        send_cmd(cdh.EXEC_PY, b"for _ in range(40):\n\ttq.push(Message(5, b'hello'))")
+        await rt.main_task()
 
         # clear the tx queue
         for _ in range(radio.TX_SKIP):
-            await send_cmd(cdh.CLEAR_TX_QUEUE, b'')
+            send_cmd(cdh.CLEAR_TX_QUEUE, b'')
+            await rt.main_task()
+            await rt.main_task()
 
-        await self.cmd_test(cdh.TQ_SIZE, b'', '0', tq_clear=False)
+        await self.cmd_test(rt, cdh.TQ_SIZE, b'', b'0')
 
-    async def cmd_test(self, cmd, args, expected, tq_clear=True):
+    async def cmd_test(self, rt, cmd, args, expected):
         """Test that RX of a command with and without args works"""
-        if tq_clear:
-            tq.clear()
-        old_downlink = cdh._downlink
-        downlink = CaptureDownlinks(cdh._downlink)
-        cdh._downlink = downlink.command
+        tq.clear()
 
-        await send_cmd(cmd, args)
-        cdh._downlink = old_downlink
-        self.assertEqual(downlink.result, expected)
-        if tq_clear:
-            tq.clear()
+        send_cmd(cmd, args)
+        for _ in range(5):
+            await rt.main_task()
+
+        last_tx_packet = cubesat.radio.debug.last_tx_packet
+        self.assertIsNotNone(last_tx_packet, "No packet was sent")
+        self.assertEqual(last_tx_packet[1:], expected)
+
+
+if __name__ == '__main__':
+    unittest.main()

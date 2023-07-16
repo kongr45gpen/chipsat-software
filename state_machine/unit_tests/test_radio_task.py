@@ -42,6 +42,7 @@ class RXCommandTest(IsolatedAsyncioTestCase):
 
     async def test_basic(self):
         """Test that RX of a command with and without args works"""
+        cubesat.radio.debug.reset()
         rt = radio.task()
 
         noop_packet = Packet(command_data(cdh.NO_OP, b''))
@@ -82,6 +83,7 @@ class MemBuffRXTest(IsolatedAsyncioTestCase):
 
     async def test(self):
         """Test that RX of a command with and without args works"""
+        cubesat.radio.debug.reset()
         self.rt = radio.task()
 
         small_msg = "This is a small test message!"
