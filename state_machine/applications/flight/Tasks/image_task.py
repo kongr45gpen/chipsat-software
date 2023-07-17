@@ -34,7 +34,7 @@ class task(Task):
         """
         clock that returns True every 60 seconds
         """
-        if monotonic() - 30 > self.last_time:
+        if monotonic() - 60 > self.last_time:
             self.last_time = monotonic()
             return True
         return False

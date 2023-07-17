@@ -12,7 +12,7 @@ sensor.skip_frames(time=2000)           # Wait for settings take effect.
 # UART 3, and baudrate.
 uart = UART(3, 115200)
 
-#constants
+# constants
 CONFIRMATION_SEND_CODE = 0xAA
 CONFIRMATION_RECEIVE_CODE = 0xAB
 IMAGE_START = 0xAC
@@ -65,7 +65,7 @@ def send_image(image_filepath) -> None:
     pointer = 0
     while (pointer < filesize):
         sleeping = True
-        while(sleeping):
+        while (sleeping):
             uart.readinto(buffer)
             if buffer[0] == PACKET_REQ:
                 print("writing packet")
