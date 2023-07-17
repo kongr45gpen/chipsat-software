@@ -116,6 +116,13 @@ class task(Task):
         file_err = False
         while monotonic() - 2 < st:
             cubesat.uart.readinto(header_buffer)
+            if header_buffer[0] == NO_IMAGE:
+                self.debug("image not interesting")
+                cubesat.cam_pin.value = False
+                self.cam_active = False
+                self.cam_on = False
+                valid_packet = True
+                break
             cubesat.uart.readinto(image_buffer)
             if (header_buffer[0] == IMAGE_START or header_buffer[0] == IMAGE_MID or header_buffer[0] == IMAGE_END):
                 valid_packet = True
@@ -123,12 +130,6 @@ class task(Task):
             elif header_buffer[0] == CONFIRMATION_SEND_CODE:
                 self.cam_active = False
                 self.debug("camera did not receive confirmation")
-                return True
-            elif header_buffer[0] == NO_IMAGE:
-                self.debug("image not interesting")
-                cubesat.cam_pin.value = False
-                self.cam_active = False
-                self.cam_on = False
                 return True
         if not valid_packet:
             self.debug("could not get packet")
@@ -178,7 +179,7 @@ class task(Task):
                 file_err = True
                 print(f"could not write last packet to file: {e}")
 
-        if valid_packet and (not file_err):
+        if not file_err:
             # send confirmation of recieved packet
             cubesat.uart.reset_input_buffer()
             header_buffer[0] = IMAGE_CONF
