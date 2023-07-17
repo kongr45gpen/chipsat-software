@@ -14,6 +14,7 @@ IMAGE_MID = 0xAD
 IMAGE_END = 0xAE
 IMAGE_CONF = 0xAF
 PACKET_REQ = 0xB0
+NO_IMAGE = 0xB1
 MAX_CONF_ATTEMPTS = 3
 
 image_buffer = bytearray(499)
@@ -83,6 +84,12 @@ class task(Task):
             # get as many packets in 2 seconds as it can
             await self.get_packets(st)
             # clear uart
+            if self.conf_attempts > MAX_CONF_ATTEMPTS:
+                self.debug("packet receiving failed: turning camera off")
+                cubesat.cam_pin.value = False
+                self.cam_on = False
+                self.cam_active = False
+                self.conf_attempts = 0
 
         else:
             self.debug("camera asleep")
@@ -94,10 +101,14 @@ class task(Task):
         collect()
 
     async def get_packets(self, st):
-        while monotonic() - 2 < st:
-            self.get_packet()
+        done = False
+        while monotonic() - 2 < st and not done:
+            done = self.get_packet()
 
-    def get_packet(self):
+    def get_packet(self) -> bool:
+        """gets packets from the camera and writes those packets to the current
+        working file. If this is the last time this function should run within the
+        given scope, it returns True, otherwise it returns False"""
         header_buffer[0] = PACKET_REQ
         cubesat.uart.write(header_buffer)
         valid_packet = False
@@ -112,11 +123,20 @@ class task(Task):
             elif header_buffer[0] == CONFIRMATION_SEND_CODE:
                 self.cam_active = False
                 self.debug("camera did not receive confirmation")
-                return
+                return True
+            elif header_buffer[0] == NO_IMAGE:
+                self.debug("image not interesting")
+                cubesat.cam_pin.value = False
+                self.cam_active = False
+                self.cam_on = False
+                return True
         if not valid_packet:
             self.debug("could not get packet")
             cubesat.uart.reset_input_buffer()
-            return
+            self.conf_attempts += 1
+            return False
+        last_packet = False
+        self.conf_attempts = 0
         if header_buffer[0] == IMAGE_START:
             valid_packet = True
             # first packet
@@ -152,6 +172,7 @@ class task(Task):
                 cubesat.cam_pin.value = False
                 self.cam_on = False
                 self.cam_active = False
+                last_packet = True
                 iq.push(self.filepath)
             except Exception as e:
                 file_err = True
@@ -162,3 +183,4 @@ class task(Task):
             cubesat.uart.reset_input_buffer()
             header_buffer[0] = IMAGE_CONF
             cubesat.uart.write(header_buffer)
+            return last_packet
