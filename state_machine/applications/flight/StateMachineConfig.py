@@ -6,6 +6,7 @@ from Tasks.time_task import task as time
 from Tasks.gnc import task as gnc
 from Tasks.radio import task as radio
 from Tasks.deployment_manager import deployment_manager
+from Tasks.hw_monitor import task as hw_monitor
 from TransitionFunctions import announcer, low_power_on, low_power_off
 from config import config  # noqa: F401
 
@@ -18,6 +19,7 @@ TaskMap = {
     "GNC": gnc,
     "Radio": radio,
     "DeploymentManager": deployment_manager,
+    "HwMonitor": hw_monitor,
 }
 
 TransitionFunctionMap = {
