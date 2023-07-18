@@ -10,6 +10,8 @@ import radio_utils.headers as headers
 import radio_utils.message as message
 from pycubed import cubesat
 import time
+from lib.alerts import alerts
+
 Message = message.Message
 
 ANTENNA_ATTACHED = False
@@ -47,12 +49,11 @@ class task(Task):
 
         In order to transmit something one should push to the transmission queue.
         """
-        if not cubesat.radio:
-            self.debug('No radio attached, skipping radio task')
+        if not cubesat.radio or not ANTENNA_ATTACHED:
+            alerts.set(self.debug, 'radio_task_disabled')
             return
-        elif not ANTENNA_ATTACHED:
-            self.debug('No antenna attached, skipping radio task')
-            return
+        else:
+            alerts.clear(self.debug, 'radio_task_disabled')
 
         if should_transmit():
             msg = tq.peek()

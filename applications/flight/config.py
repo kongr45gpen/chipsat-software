@@ -36,6 +36,11 @@ config = {
                 "Priority": 0,
                 "ScheduleLater": True
             },
+            "HwMonitor": {
+                "Interval": 1,
+                "Priority": 0,
+                "ScheduleLater": False
+            }
         },
         "StepsTo": [
             "Safe",
@@ -53,6 +58,11 @@ config = {
                 "Priority": 255,
                 "ScheduleLater": False
             },
+            "HwMonitor": {
+                "Interval": 1,
+                "Priority": 0,
+                "ScheduleLater": False
+            }
         },
         "StepsTo": [
             "Normal",
@@ -84,6 +94,11 @@ config = {
                 "Priority": 255,
                 "ScheduleLater": False
             },
+            "HwMonitor": {
+                "Interval": 1,
+                "Priority": 0,
+                "ScheduleLater": False
+            }
         },
         "StepsTo": [
             "Normal",
