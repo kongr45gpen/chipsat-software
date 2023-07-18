@@ -34,7 +34,6 @@ class task(Task):
         """
         if monotonic() - 60 > self.last_time:
             self.last_time = monotonic()
-            alerts.clear(self.debug, 'camera_disabled')
             return True
         return False
 
@@ -45,11 +44,9 @@ class task(Task):
         if not cubesat.camera:
             alerts.clear(self.debug, 'camera_available')
             alerts.clear(self.debug, 'image_queue_full')
-            alerts.clear(self.debug, 'camera_disabled')
             return
         elif iq.size() >= 5:
             alerts.set(self.debug, 'image_queue_full')
-            alerts.set(self.debug, 'camera_disabled')
             return
         else:
             alerts.clear(self.debug, 'image_queue_full')
@@ -91,7 +88,6 @@ class task(Task):
     def check_attempts(self):
         if self.conf_attempts > MAX_CONF_ATTEMPTS:
             # turn off camera to not waste battery as something is wrong
-            alerts.set(self.debug, 'camera_disabled')
             alerts.set(self.debug, 'camera_failed')
             cubesat.cam_pin.value = False
             self.cam_on = False
@@ -112,7 +108,6 @@ class task(Task):
                     print(f"could not write mid packet to {self.filepath}: {e}")
             elif flag == 1:
                 self.debug("image not interesting")
-                alerts.set(self.debug, 'camera_disabled')
                 alerts.clear(self.debug, 'camera_failed')
                 cubesat.cam_pin.value = False
                 self.cam_active = False
@@ -139,7 +134,6 @@ class task(Task):
                 try:
                     with open(self.filepath, "ab") as fd:
                         fd.write(packet[1:index + 2])
-                    alerts.set(self.debug, 'camera_disabled')
                     alerts.clear(self.debug, 'camera_failed')
                     cubesat.cam_pin.value = False
                     self.cam_on = False
