@@ -37,5 +37,9 @@ alerts = AlertManager(
         'radio_task_disabled',
         'rtc_available',
         'neopixel_available',
+        'camera_available',
+        'camera_disabled',
+        'image_queue_full',
+        'camera_failed',
     }
 )
