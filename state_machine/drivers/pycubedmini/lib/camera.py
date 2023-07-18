@@ -40,3 +40,52 @@ class Camera:
                 self.uart.reset_input_buffer()
                 return True
         return False
+
+    @property
+    def get_packet(self) -> tuple:
+        """
+        gets packets from the camera and writes those packets to the current
+        working file.
+
+        returns a code which correspondes to what happened when getting the packet
+        - 0: success
+        - 1: success, image not interesting
+        - 2: success, first packet
+        - 3: success, last packet
+        - 4: camera must not have received our confirmation byte as we are still getting 
+             the confirmation send code, send confirmation byte again
+        - 5: failed to get packet
+        """
+
+        header_buffer[0] = PACKET_REQ
+        self.uart.write(header_buffer)
+        valid_packet = False
+        st = monotonic()
+        while monotonic() - 2 < st:
+            self.uart.readinto(header_buffer)
+            if header_buffer[0] == NO_IMAGE:
+                return None, 1
+            self.uart.readinto(image_buffer)
+            if (header_buffer[0] == IMAGE_START or header_buffer[0] == IMAGE_MID or header_buffer[0] == IMAGE_END):
+                valid_packet = True
+                break
+            elif header_buffer[0] == CONFIRMATION_SEND_CODE:
+                return None, 4
+        if not valid_packet:
+            self.uart.reset_input_buffer()
+            return None, 5
+        if header_buffer[0] == IMAGE_START:
+            # first packet
+            # create new image file
+            return image_buffer, 2
+        elif header_buffer[0] == IMAGE_MID:
+            # middle packet
+            return image_buffer, 0
+        elif header_buffer[0] == IMAGE_END:
+            return image_buffer, 3
+
+    @property
+    def ack(self):
+        self.uart.reset_input_buffer()
+        header_buffer[0] = IMAGE_CONF
+        self.uart.write(header_buffer)
