@@ -16,6 +16,7 @@ import pwmio
 import bmx160
 import drv8830
 import opt3001
+import camera
 from adafruit_pcf8523 import PCF8523
 from bitflags import bitFlag, multiByte
 import configuration.hardware_configuration as hw_config
@@ -99,7 +100,7 @@ class _Satellite:
         self._vbatt = analogio.AnalogIn(board.BATTERY)  # Battery voltage
 
         # To force initialization of hardware
-        self.uart
+        self.uart_camera
         self.i2c1
         self.i2c2
         self.i2c3
@@ -121,15 +122,16 @@ class _Satellite:
         self.drv_y
         self.drv_z
         self.burnwire1
+        self.camera
 
     @device
-    def uart(self):
+    def uart_camera(self):
         """initialize UART communication with cameraboard
         raise cam_pin high to turn on camera"""
         try:
             return busio.UART(board.TX, board.RX, baudrate=115200)
         except Exception as e:
-            print(f"could not initialize uart: {e}")
+            print(f"[ERROR][Initializing UART]: {e}")
 
     @device
     def i2c1(self):
@@ -426,6 +428,13 @@ class _Satellite:
         except Exception as e:
             print(f"[ERROR][INITIALIZING CURRENT] {e}, " +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+
+    @device
+    def camera(self):
+        try:
+            return camera.Camera(self.uart_camera)
+        except Exception as e:
+            print(f"[ERROR][Initializing Camera]: {e}")
 
     def imuToBodyFrame(self, vec):
         return dot(hw_config.R_IMU2BODY, array(vec))

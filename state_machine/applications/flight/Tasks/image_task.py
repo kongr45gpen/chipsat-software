@@ -1,10 +1,10 @@
-# Transmit "Hello World" beacon
-
 from Tasks.log import LogTask as Task
 import radio_utils.image_queue as iq
 from pycubed import cubesat
 from time import monotonic, localtime
 from gc import collect
+from lib.alerts import alerts
+import tasko
 
 # constants
 CONFIRMATION_SEND_CODE = 0xAA
@@ -17,7 +17,14 @@ PACKET_REQ = 0xB0
 NO_IMAGE = 0xB1
 MAX_CONF_ATTEMPTS = 3
 
+"""
+buffer to be used with the UART channel to read into and get data
+"""
 image_buffer = bytearray(499)
+"""
+to avoid having to list slice (which uses signigicant memory creating "copies" of the list)
+the buffer that contains the header and the buffer that contains the image data are separated
+"""
 header_buffer  = bytearray(1)
 class task(Task):
     name = 'image'
@@ -36,19 +43,26 @@ class task(Task):
         """
         if monotonic() - 60 > self.last_time:
             self.last_time = monotonic()
+            alerts.clear(self.debug, 'camera_disabled')
             return True
         return False
 
     async def main_task(self):
         """
-        Pushes a beacon packet onto the transmission queue.
+        gets an image from the camera board
         """
+        if not cubesat.camera:
+            alerts.clear(self.debug, 'camera_available')
+            alerts.clear(self.debug, 'image_queue_full')
+            alerts.clear(self.debug, 'camera_disabled')
+            return
+        elif iq.size() >= 5:
+            alerts.set(self.debug, 'image_queue_full')
+            alerts.set(self.debug, 'camera_disabled')
+            return
+        else:
+            alerts.clear(self.debug, 'image_queue_full')
         collect()
-        if not cubesat.uart:
-            return
-        if iq.size() >= 5:
-            self.debug("images already queued")
-            return
 
         st = monotonic()
         if self.should_activate() and not self.cam_active and not self.cam_on:
@@ -57,40 +71,21 @@ class task(Task):
             cubesat.cam_pin.value = True
             self.cam_on = True
         elif (not self.cam_active) and self.cam_on:
-            # camera has likely just been turned on and we need to verify connection
+            # await self.get_confirmation(st)
             self.debug("checking camera connection...")
-            # look for 2 seconds
-            while monotonic() - 2 < st:
-                cubesat.uart.readinto(header_buffer)
-                if CONFIRMATION_SEND_CODE == header_buffer[0]:
-                    header_buffer[0] = CONFIRMATION_RECEIVE_CODE
-                    cubesat.uart.write(header_buffer)
-                    self.debug("responding", level=2)
-                    cubesat.uart.reset_input_buffer()
-                    self.cam_active = True
-                    self.conf_attempts = 0
-                    break
-            self.conf_attempts += 1
-            if self.conf_attempts > MAX_CONF_ATTEMPTS:
-                # turn off camera to not waste battery as something is wrong
-                self.debug("Confirmation failed: turning camera off")
-                cubesat.cam_pin.value = False
-                self.cam_on = False
-                self.cam_active = False
+            success = cubesat.camera.get_confirmation
+            if success:
+                self.cam_active = True
                 self.conf_attempts = 0
-
+                alerts.clear(self.debug, 'camera_failed')
+                self.debug("...connection confirmed")
+            else:
+                self.conf_attempts += 1
+            self.check_attempts()
         elif self.cam_active and self.cam_on:
             self.debug("getting image packets")
             # get as many packets in 2 seconds as it can
             await self.get_packets(st)
-            # clear uart
-            if self.conf_attempts > MAX_CONF_ATTEMPTS:
-                self.debug("packet receiving failed: turning camera off")
-                cubesat.cam_pin.value = False
-                self.cam_on = False
-                self.cam_active = False
-                self.conf_attempts = 0
-
         else:
             self.debug("camera asleep")
             if not iq.empty():
@@ -100,8 +95,45 @@ class task(Task):
 
         collect()
 
+    def check_attempts(self):
+        if self.conf_attempts > MAX_CONF_ATTEMPTS:
+            # turn off camera to not waste battery as something is wrong
+            alerts.set(self.debug, 'camera_disabled')
+            alerts.set(self.debug, 'camera_failed')
+            cubesat.cam_pin.value = False
+            self.cam_on = False
+            self.cam_active = False
+            self.conf_attempts = 0
+
+    async def get_confirmation(self, st) -> bool:
+        # camera has likely just been turned on and we need to verify connection
+        self.debug("checking camera connection...")
+        # look for 2 seconds
+        await tasko.sleep(0)
+        while monotonic() - 2 < st:
+            cubesat.uart_camera.readinto(header_buffer)
+            if CONFIRMATION_SEND_CODE == header_buffer[0]:
+                alerts.clear(self.debug, 'camera_failed')
+                header_buffer[0] = CONFIRMATION_RECEIVE_CODE
+                cubesat.uart_camera.write(header_buffer)
+                self.debug("responding", level=2)
+                cubesat.uart.reset_input_buffer()
+                self.cam_active = True
+                self.conf_attempts = 0
+                break
+        self.conf_attempts += 1
+        if self.conf_attempts > MAX_CONF_ATTEMPTS:
+            # turn off camera to not waste battery as something is wrong
+            alerts.set(self.debug, 'camera_disabled')
+            alerts.set(self.debug, 'camera_failed')
+            cubesat.cam_pin.value = False
+            self.cam_on = False
+            self.cam_active = False
+            self.conf_attempts = 0
+
     async def get_packets(self, st):
         done = False
+        await tasko.sleep(0)
         while monotonic() - 2 < st and not done:
             done = self.get_packet()
 
@@ -110,12 +142,12 @@ class task(Task):
         working file. If this is the last time this function should run within the
         given scope, it returns True, otherwise it returns False"""
         header_buffer[0] = PACKET_REQ
-        cubesat.uart.write(header_buffer)
+        cubesat.uart_camera.write(header_buffer)
         valid_packet = False
         st = monotonic()
         file_err = False
         while monotonic() - 2 < st:
-            cubesat.uart.readinto(header_buffer)
+            cubesat.uart_camera.readinto(header_buffer)
             if header_buffer[0] == NO_IMAGE:
                 self.debug("image not interesting")
                 cubesat.cam_pin.value = False
@@ -123,7 +155,7 @@ class task(Task):
                 self.cam_on = False
                 valid_packet = True
                 break
-            cubesat.uart.readinto(image_buffer)
+            cubesat.uart_camera.readinto(image_buffer)
             if (header_buffer[0] == IMAGE_START or header_buffer[0] == IMAGE_MID or header_buffer[0] == IMAGE_END):
                 valid_packet = True
                 break
@@ -133,9 +165,17 @@ class task(Task):
                 return True
         if not valid_packet:
             self.debug("could not get packet")
-            cubesat.uart.reset_input_buffer()
+            cubesat.uart_camera.reset_input_buffer()
             self.conf_attempts += 1
+            if self.conf_attempts > MAX_CONF_ATTEMPTS:
+                alerts.set(self.debug, 'camera_disabled')
+                alerts.set(self.debug, 'camera_failed')
+                cubesat.cam_pin.value = False
+                self.cam_on = False
+                self.cam_active = False
+                self.conf_attempts = 0
             return False
+        alerts.clear(self.debug, 'camera_failed')
         last_packet = False
         self.conf_attempts = 0
         if header_buffer[0] == IMAGE_START:
@@ -170,6 +210,7 @@ class task(Task):
             try:
                 with open(self.filepath, "ab") as fd:
                     fd.write(image_buffer[1:index + 2])
+                alerts.set(self.debug, 'camera_disabled')
                 cubesat.cam_pin.value = False
                 self.cam_on = False
                 self.cam_active = False
@@ -181,7 +222,7 @@ class task(Task):
 
         if not file_err:
             # send confirmation of recieved packet
-            cubesat.uart.reset_input_buffer()
+            cubesat.uart_camera.reset_input_buffer()
             header_buffer[0] = IMAGE_CONF
-            cubesat.uart.write(header_buffer)
+            cubesat.uart_camera.write(header_buffer)
             return last_packet
