@@ -9,7 +9,7 @@ class task(Task):
 
     async def main_task(self):
         """
-        Prints the IMU data to the console.
+        Sets alerts corresponding to hardware availability of the cubesat.
         """
         alerts.set_value(self.debug, 'imu_available', cubesat.imu is not None)
         alerts.set_value(self.debug, 'radio_available', cubesat.radio is not None)
