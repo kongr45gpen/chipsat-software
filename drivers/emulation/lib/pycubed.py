@@ -4,6 +4,7 @@ import tasko
 import lib.reader as reader
 from lib.bitflags import bitFlag, multiByte, nvm
 from lib.radio_driver import Radio
+from lib.camera_driver import Camera
 # from lib.sd import SD
 import random
 try:
@@ -68,6 +69,7 @@ class _Satellite:
 
         self.radio = Radio()
         self.burnwire1 = Burnwire()
+        self.camera = Camera()
 
         self.data_cache = {}
 
