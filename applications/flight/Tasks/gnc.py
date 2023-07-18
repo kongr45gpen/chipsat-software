@@ -26,6 +26,9 @@ class task(Task):
         Uses the b-cross control law to detumble the satelite.
         """
 
+        if not cubesat.imu:
+            return
+
         # compute control
         m = bcross(cubesat.magnetic, cubesat.gyro)
 
