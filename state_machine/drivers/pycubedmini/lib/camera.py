@@ -52,7 +52,7 @@ class Camera:
         - 1: success, image not interesting
         - 2: success, first packet
         - 3: success, last packet
-        - 4: camera must not have received our confirmation byte as we are still getting 
+        - 4: camera must not have received our confirmation byte as we are still getting
              the confirmation send code, send confirmation byte again
         - 5: failed to get packet
         """
