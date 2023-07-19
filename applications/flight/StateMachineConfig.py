@@ -5,7 +5,7 @@ from Tasks.imu_task import task as imu
 from Tasks.time_task import task as time
 from Tasks.gnc import task as gnc
 from Tasks.radio import task as radio
-from Tasks.image_task import task as image
+from Tasks.image import task as image
 from Tasks.deployment_manager import deployment_manager
 from Tasks.hw_monitor import task as hw_monitor
 from TransitionFunctions import announcer, low_power_on, low_power_off
