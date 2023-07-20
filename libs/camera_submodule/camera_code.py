@@ -43,7 +43,6 @@ def check_connection() -> None:
 def process_image() -> str:
     # image processing
     img = sensor.snapshot()
-    img.save(filepath, quality=90)
 
     blobs = img.find_blobs([(50, 100, -8, 8, -8, 8)])
     for blob in blobs:
@@ -52,8 +51,8 @@ def process_image() -> str:
     if len(blobs) == 0:
         return NO_IMAGE
 
+    img.save(filepath, quality=90)
     return filepath
-
 
 def send_image(image_filepath) -> None:
     # send packets and wait for ack after each packet
