@@ -47,7 +47,7 @@ class Camera:
         gets packets from the camera and writes those packets to the current
         working file.
 
-        returns a code which correspondes to what happened when getting the packet
+        returns packet and a code which correspondes to what happened when getting the packet
         - 0: success
         - 1: success, image not interesting
         - 2: success, first packet
@@ -65,9 +65,9 @@ class Camera:
             self.uart.readinto(header_buffer)
             if header_buffer[0] == NO_IMAGE:
                 return None, 1
-            self.uart.readinto(image_buffer)
             if (header_buffer[0] == IMAGE_START or header_buffer[0] == IMAGE_MID or header_buffer[0] == IMAGE_END):
                 valid_packet = True
+                self.uart.readinto(image_buffer)
                 break
             elif header_buffer[0] == CONFIRMATION_SEND_CODE:
                 return None, 4

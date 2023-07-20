@@ -32,7 +32,6 @@ def check_connection() -> None:
     confirmed = False
     while not confirmed:
         buffer[0] = CONFIRMATION_SEND_CODE
-        print(f"writing: {buffer}")
         uart.write(buffer)
         start_time = time.ticks_ms()
         while time.ticks_ms() - 1000 < start_time:
@@ -68,7 +67,6 @@ def send_image(image_filepath) -> None:
         while (sleeping):
             uart.readinto(buffer)
             if buffer[0] == PACKET_REQ:
-                print("writing packet")
                 sleeping = False
 
         else:
@@ -88,7 +86,6 @@ def send_image(image_filepath) -> None:
                 packet[0] = IMAGE_MID
             packet[1:] = data
             uart.write(packet)
-
         # wait for confirmation
         confirmed = False
         s_time = time.ticks_ms()
@@ -99,7 +96,6 @@ def send_image(image_filepath) -> None:
             if uart.any():
                 uart.readinto(buffer)
                 if buffer[0] == IMAGE_CONF:
-                    print("packet confirmed")
                     pointer += (packet_len - 1)
                     confirmed = True
                     time.sleep(0.02)
@@ -108,7 +104,6 @@ def send_flag(flag):
     confirmed = False
     while not confirmed:
         buffer[0] = flag
-        print(f"writing: {buffer}")
         uart.write(buffer)
         start_time = time.ticks_ms()
         while time.ticks_ms() - 1000 < start_time:

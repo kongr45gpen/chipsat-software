@@ -95,6 +95,10 @@ class task(Task):
             self.conf_attempts = 0
 
     def get_packets(self, st):
+        """
+        camera.get_packet returns the packet and a code which gives us information about the packet
+        this is why `packet, flag = cubesat.camera.get_packet`
+        """
         file_err = False
         while monotonic() - 2 < st:
             packet, flag = cubesat.camera.get_packet
