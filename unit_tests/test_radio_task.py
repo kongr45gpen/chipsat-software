@@ -72,7 +72,7 @@ class TestRxAndTx(IsolatedAsyncioTestCase):
             await rt.main_task()
 
         expect = bytearray(b'\xfd12')
-        self.assertEqual(cubesat.radio.debug.last_tx_packet, expect, "Got unexpected packet")
+        self.assertEqual(cubesat.radio.test.last_tx_packet, expect, "Got unexpected packet")
 
 
 class MemBuffRXTest(IsolatedAsyncioTestCase):
