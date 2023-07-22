@@ -23,4 +23,4 @@ def command_data(command_code, args):
 
 def send_cmd(cmd, args):
     query_packet = Packet(command_data(cmd, args))
-    cubesat.radio.debug.push_rx_queue(query_packet)
+    cubesat.radio.test.push_rx_queue(query_packet)

@@ -21,17 +21,11 @@ tx_ready_counter = 0
 TX_UPLINK_ENABLE_TIME = 5 * 60  # 5 minutes
 tx_before_time = 0
 
-def tx_allowed():
-    """
-    Return if we are allowed to transmit
-    """
-    return settings.TX_ALLOWED
-
 def should_transmit():
     """
     Return if we should transmit
     """
-    tx_ready = tx_allowed() and not tq.empty() and cubesat.radio.fifo_empty()
+    tx_ready = settings.TX_ALLOWED and not tq.empty() and cubesat.radio.fifo_empty()
     tx_time_ready = time.time() < tx_before_time
     if tx_ready:
         global tx_ready_counter
@@ -54,7 +48,7 @@ class task(Task):
 
         In order to transmit something one should push to the transmission queue.
         """
-        if not cubesat.radio:
+        if not cubesat.radio or (not settings.TX_ALLOWED and not settings.RX_ALLOWED):
             alerts.set(self.debug, 'radio_task_disabled')
             return
         else:
@@ -84,7 +78,7 @@ class task(Task):
             self.debug("Listening for packets...")
             response = await cubesat.radio.receive(
                 keep_listening=True,
-                with_ack=tx_allowed(),
+                with_ack=settings.TX_ALLOWED,
                 with_header=False)
             if response is not None:
                 self.on_uplink()

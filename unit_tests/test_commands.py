@@ -16,6 +16,7 @@ from radio_utils import transmission_queue as tq
 from radio_utils import message
 from pycubed import cubesat
 import settings
+from radio_test_utils import init_radio_task_for_testing
 Message = message.Message
 
 settings.TX_ALLLOWED = True
@@ -27,24 +28,18 @@ cubesat.radio._rx_time_dev = 0.0
 class CommandTests(IsolatedAsyncioTestCase):
 
     async def test_query(self):
-        settings.TX_ALLOWED = True
-        cubesat.radio.debug.reset()
-        rt = radio.task()
+        rt = init_radio_task_for_testing()
 
         await self.cmd_test(rt, cdh.QUERY, b'5+5', b'10')
         await self.cmd_test(rt, cdh.QUERY, b'12*12', b'144')
 
     async def test_tq_len(self):
-        settings.TX_ALLOWED = True
-        cubesat.radio.debug.reset()
-        rt = radio.task()
+        rt = init_radio_task_for_testing()
 
         await self.cmd_test(rt, cdh.TQ_SIZE, b'', b'0')
 
     async def test_tq_clear(self):
-        settings.TX_ALLOWED = True
-        cubesat.radio.debug.reset()
-        rt = radio.task()
+        rt = init_radio_task_for_testing()
 
         # clog tx queue
         send_cmd(cdh.EXEC_PY, b"for _ in range(40):\n\ttq.push(Message(5, b'hello'))")
@@ -66,7 +61,7 @@ class CommandTests(IsolatedAsyncioTestCase):
         for _ in range(5):
             await rt.main_task()
 
-        last_tx_packet = cubesat.radio.debug.last_tx_packet
+        last_tx_packet = cubesat.radio.test.last_tx_packet
         self.assertIsNotNone(last_tx_packet, "No packet was sent")
         self.assertEqual(last_tx_packet[1:], expected)
 

@@ -54,7 +54,7 @@ class Radio:
         self._last_rssi = -147.0
         self._frequency_error = 123.45
 
-        self.debug = RadioDebug(self)
+        self.test = RadioDebug(self)
 
     def listen(self):
         self.listening = True
@@ -80,7 +80,7 @@ class Radio:
     async def send(self, packet, destination=0x00, keep_listening=True):
         tx_time = self._tx_time_bias + (random.random() - 0.5) * self._tx_time_dev
         await asyncio.sleep(tx_time)
-        self.debug.last_tx_packet = packet
+        self.test.last_tx_packet = packet
         return None
 
     async def send_with_ack(self, packet, keep_listening=True):
