@@ -28,7 +28,6 @@ class Camera:
     def __init__(self, uart_bus) -> None:
         self.uart = uart_bus
 
-    @property
     def get_confirmation(self, is_test: bool = False) -> bool:
         st = monotonic()
         # camera has likely just been turned on and we need to verify connection

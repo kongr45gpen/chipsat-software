@@ -63,7 +63,7 @@ class task(Task):
             # await self.get_confirmation(st)
             self.debug("checking camera connection...")
             await tasko.sleep(0)
-            success = cubesat.camera.get_confirmation
+            success = cubesat.camera.get_confirmation()
             if success:
                 self.cam_active = True
                 self.conf_attempts = 0
