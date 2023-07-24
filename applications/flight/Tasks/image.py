@@ -158,7 +158,7 @@ class task(Task):
                 self.conf_attempts += 1
                 self.check_attempts()
 
-            if (flag == 0 or flag == 2) and not file_err:
+            if (flag == flags.SUCCESS_MID_PACKET or flag == flags.SUCCESS_FIRST_PACKET) and not file_err:
                 alerts.clear(self.debug, 'camera_failed')
                 self.conf_attempts = 0
                 cubesat.camera.ack
