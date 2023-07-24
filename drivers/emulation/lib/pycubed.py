@@ -1,12 +1,13 @@
 import time
 import tasko
-
+import builtins
 import lib.reader as reader
 from lib.bitflags import bitFlag, multiByte, nvm
 from lib.radio_driver import Radio
 from lib.camera_driver import Camera
-# from lib.sd import SD
+from lib.sd import SD
 import random
+import os
 try:
     from ulab.numpy import array
 except ImportError:
@@ -37,6 +38,10 @@ class sun_sensor:
     def __init__(self, lux):
         self.lux = lux
 
+class pin:
+    def __init__(self):
+        self.value = False
+
 class _Satellite:
     # Define NVM flags
     f_contact = bitFlag(register=0, bit=1)
@@ -62,11 +67,14 @@ class _Satellite:
     # Low battery voltage threshold
     LOW_VOLTAGE = 4.0
 
+    cam_pin = pin()
+
     def __init__(self):
         self.f_contact = True
         self.task = None
         self.scheduled_tasks = {}
 
+        self.sdcard = SD()
         self.radio = Radio()
         self.burnwire1 = Burnwire()
         self.camera = Camera()
@@ -87,8 +95,9 @@ class _Satellite:
         # debug utilities
         self.sim = False
         self.randomize_voltage = False
-        self.sdcard = None
         self.vfs = None
+        builtins.open = self.sdcard.custom_open
+        os.mkdir = self.sdcard.custom_mkdir
 
     @property
     def acceleration(self):
