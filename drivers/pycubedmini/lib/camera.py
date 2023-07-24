@@ -1,5 +1,5 @@
 from time import monotonic
-
+from lib.image_utils import flags
 
 # constants
 CONFIRMATION_SEND_CODE = 0xAA
@@ -10,6 +10,7 @@ IMAGE_END = 0xAE
 IMAGE_CONF = 0xAF
 PACKET_REQ = 0xB0
 NO_IMAGE = 0xB1
+CONFIRMATION_RECEIVE_TEST_CODE = 0xB2
 MAX_CONF_ATTEMPTS = 3
 
 """
@@ -28,14 +29,17 @@ class Camera:
         self.uart = uart_bus
 
     @property
-    def get_confirmation(self) -> bool:
+    def get_confirmation(self, is_test: bool = False) -> bool:
         st = monotonic()
         # camera has likely just been turned on and we need to verify connection
         # look for 2 seconds
         while monotonic() - 2 < st:
             self.uart.readinto(header_buffer)
             if CONFIRMATION_SEND_CODE == header_buffer[0]:
-                header_buffer[0] = CONFIRMATION_RECEIVE_CODE
+                if is_test:
+                    header_buffer[0] = CONFIRMATION_RECEIVE_TEST_CODE
+                else:
+                    header_buffer[0] = CONFIRMATION_RECEIVE_CODE
                 self.uart.write(header_buffer)
                 self.uart.reset_input_buffer()
                 return True
@@ -64,25 +68,25 @@ class Camera:
         while monotonic() - 2 < st:
             self.uart.readinto(header_buffer)
             if header_buffer[0] == NO_IMAGE:
-                return None, 1
+                return None, flags.SUCCESS_NOT_INTERESTING
             if (header_buffer[0] == IMAGE_START or header_buffer[0] == IMAGE_MID or header_buffer[0] == IMAGE_END):
                 valid_packet = True
                 self.uart.readinto(image_buffer)
                 break
             elif header_buffer[0] == CONFIRMATION_SEND_CODE:
-                return None, 4
+                return None, flags.FAIL_CONFIRM_AGAIN
         if not valid_packet:
             self.uart.reset_input_buffer()
-            return None, 5
+            return None, flags.FAIL_NO_PACKET
         if header_buffer[0] == IMAGE_START:
             # first packet
             # create new image file
-            return image_buffer, 2
+            return image_buffer, flags.SUCCESS_FIRST_PACKET
         elif header_buffer[0] == IMAGE_MID:
             # middle packet
-            return image_buffer, 0
+            return image_buffer, flags.SUCCESS_MID_PACKET
         elif header_buffer[0] == IMAGE_END:
-            return image_buffer, 3
+            return image_buffer, flags.SUCCESS_END_PACKET
 
     @property
     def ack(self):

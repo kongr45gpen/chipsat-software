@@ -4,6 +4,7 @@ from pycubed import cubesat
 from time import monotonic, localtime
 from gc import collect
 from lib.alerts import alerts
+from lib.image_utils import flags
 import tasko
 
 # constants
@@ -41,8 +42,8 @@ class task(Task):
         """
         gets an image from the camera board
         """
-        if not cubesat.camera:
-            alerts.clear(self.debug, 'camera_available')
+        # image task requires sd card to get an image
+        if not cubesat.camera or not cubesat.sdcard:
             alerts.clear(self.debug, 'image_queue_full')
             return
         elif iq.size() >= 5:
@@ -102,7 +103,7 @@ class task(Task):
         file_err = False
         while monotonic() - 2 < st:
             packet, flag = cubesat.camera.get_packet
-            if flag == 0:
+            if flag == flags.SUCCESS_MID_PACKET:
                 # middle packet
                 try:
                     with open(self.filepath, "ab") as fd:
@@ -110,7 +111,7 @@ class task(Task):
                 except Exception as e:
                     file_err = True
                     print(f"could not write mid packet to {self.filepath}: {e}")
-            elif flag == 1:
+            elif flag == flags.SUCCESS_NOT_INTERESTING:
                 self.debug("image not interesting")
                 alerts.clear(self.debug, 'camera_failed')
                 cubesat.cam_pin.value = False
@@ -118,7 +119,7 @@ class task(Task):
                 self.cam_on = False
                 cubesat.camera.ack
                 break
-            elif flag == 2:
+            elif flag == flags.SUCCESS_FIRST_PACKET:
                 if cubesat.rtc:
                     t = cubesat.rtc.datetime
                 else:
@@ -132,7 +133,7 @@ class task(Task):
                 except Exception as e:
                     file_err = True
                     print(f"could not create new image file: {e}")
-            elif flag == 3:
+            elif flag == flags.SUCCESS_END_PACKET:
                 self.debug("end file")
                 index = packet.find(b'\xFF\xD9')
                 try:
@@ -148,11 +149,11 @@ class task(Task):
                 except Exception as e:
                     file_err = True
                     print(f"could not write last packet to file: {e}")
-            elif flag == 4:
+            elif flag == flags.FAIL_CONFIRM_AGAIN:
                 self.debug("camera did not receive confirmation")
                 self.cam_active = False
                 break
-            elif flag == 5:
+            elif flag == flags.FAIL_NO_PACKET:
                 self.debug("could not get packet")
                 self.conf_attempts += 1
                 self.check_attempts()
