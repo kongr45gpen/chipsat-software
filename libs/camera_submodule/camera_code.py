@@ -21,8 +21,10 @@ IMAGE_END = 0xAE
 IMAGE_CONF = 0xAF
 PACKET_REQ = 0xB0
 NO_IMAGE = 0xB1
+CONFIRMATION_RECEIVE_TEST_CODE = 0xB2
 
-filepath = "images/image_test.jpeg"
+test_filepath = "images/test_image.jpeg"
+filepath = "images/sat_image.jpeg"
 
 buffer = bytearray(1)
 
@@ -39,12 +41,18 @@ def check_connection() -> None:
             if buffer[0] == CONFIRMATION_RECEIVE_CODE:
                 # connection confirmed and begin sending message
                 confirmed = True
+                break
+            elif buffer[0] == CONFIRMATION_RECEIVE_TEST_CODE:
+                print("got test code")
+                confirmed = True
+                break
+    return buffer[0]
 
 def process_image() -> str:
     # image processing
     img = sensor.snapshot()
 
-    blobs = img.find_blobs([(50, 100, -8, 8, -8, 8)])
+    blobs = img.find_blobs([(60, 100, -8, 8, -8, 8)])
     for blob in blobs:
         if blob.pixels() > 150:
             img.draw_rectangle(blob.rect(), color=(0, 255, 0))
@@ -120,13 +128,17 @@ if __name__ == '__main__':
         print(f"could not create images directory: {e}")
 
     # check that the UART connection is good
-    check_connection()
+    req = check_connection()
 
-    # take, process, and save an image
-    img_filepath = process_image()
+    if req == CONFIRMATION_RECEIVE_CODE:
+        # take, process, and save an image
+        img_filepath = process_image()
 
-    # send the current image
-    if img_filepath == NO_IMAGE:
-        send_flag(NO_IMAGE)
-    else:
-        send_image(img_filepath)
+        # send the current image
+        if img_filepath == NO_IMAGE:
+            send_flag(NO_IMAGE)
+        else:
+            send_image(img_filepath)
+    elif req == CONFIRMATION_RECEIVE_TEST_CODE:
+        print("sending test image")
+        send_image(test_filepath)
