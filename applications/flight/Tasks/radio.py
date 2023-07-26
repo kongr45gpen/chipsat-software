@@ -9,12 +9,11 @@ import radio_utils.commands as cdh
 import radio_utils.headers as headers
 import radio_utils.message as message
 from pycubed import cubesat
+import settings
 import time
-from lib.alerts import alerts
+from alerts import alerts
 
 Message = message.Message
-
-ANTENNA_ATTACHED = False
 
 TX_SKIP = 5  # skip every TX_SKIP transmissions
 tx_ready_counter = 0
@@ -26,7 +25,7 @@ def should_transmit():
     """
     Return if we should transmit
     """
-    tx_ready = ANTENNA_ATTACHED and not tq.empty() and cubesat.radio.fifo_empty()
+    tx_ready = settings.TX_ALLOWED and not tq.empty() and cubesat.radio.fifo_empty()
     tx_time_ready = time.time() < tx_before_time
     if tx_ready:
         global tx_ready_counter
@@ -49,7 +48,7 @@ class task(Task):
 
         In order to transmit something one should push to the transmission queue.
         """
-        if not cubesat.radio or not ANTENNA_ATTACHED:
+        if not cubesat.radio or (not settings.TX_ALLOWED and not settings.RX_ALLOWED):
             alerts.set(self.debug, 'radio_task_disabled')
             return
         else:
@@ -79,7 +78,7 @@ class task(Task):
             self.debug("Listening for packets...")
             response = await cubesat.radio.receive(
                 keep_listening=True,
-                with_ack=ANTENNA_ATTACHED,
+                with_ack=settings.TX_ALLOWED,
                 with_header=False)
             if response is not None:
                 self.on_uplink()
