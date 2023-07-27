@@ -36,6 +36,11 @@ config = {
                 "Priority": 0,
                 "ScheduleLater": True
             },
+            "Image": {
+                "Interval": 5,
+                "Priority": 10,
+                "ScheduleLater": True,
+            },
             "HwMonitor": {
                 "Interval": 1,
                 "Priority": 0,

@@ -5,6 +5,7 @@ from Tasks.imu import task as imu
 from Tasks.time import task as time
 from Tasks.gnc import task as gnc
 from Tasks.radio import task as radio
+from Tasks.image import task as image
 from Tasks.deployment_manager import deployment_manager
 from Tasks.hw_monitor import task as hw_monitor
 from TransitionFunctions import announcer, low_power_on, low_power_off
@@ -18,6 +19,7 @@ TaskMap = {
     "Time": time,
     "GNC": gnc,
     "Radio": radio,
+    "Image": image,
     "DeploymentManager": deployment_manager,
     "HwMonitor": hw_monitor,
 }
