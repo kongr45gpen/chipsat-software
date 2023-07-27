@@ -1,6 +1,7 @@
 from Tasks.log import LogTask as Task
 from pycubed import cubesat
 from state_machine import state_machine
+from lib.alerts import alerts
 
 
 class task(Task):
@@ -18,8 +19,10 @@ class task(Task):
         # margins added to prevent jittering between states
         if vbatt < cubesat.LOW_VOLTAGE + 0.1:
             self.debug(f'Voltage too low ({vbatt:.2f}V < {cubesat.LOW_VOLTAGE + 0.1:.2f}V)', log=True)
+            alerts.set(self.debug, 'voltage_low')
         if temp >= cubesat.HIGH_TEMP - 1:
             self.debug(f'Temp too high ({temp:.2f}°C >= {cubesat.HIGH_TEMP - 1:.2f}°C)', log=True)
+            alerts.set(self.debug, 'temp_high')
         else:
             self.debug_status(vbatt, temp)
             self.debug(
@@ -29,12 +32,16 @@ class task(Task):
     def other_modes(self, vbatt, temp):
         if vbatt < cubesat.LOW_VOLTAGE:
             self.debug(f'Voltage too low ({vbatt:.2f}V < {cubesat.LOW_VOLTAGE:.2f}V) switch to safe mode', log=True)
+            alerts.set(self.debug, 'voltage_low')
             state_machine.switch_to('Safe')
         if temp > cubesat.HIGH_TEMP:
             self.debug(f'Temp too high ({temp:.2f}°C > {cubesat.HIGH_TEMP:.2f}°C) switching to safe mode', log=True)
+            alerts.set(self.debug, 'temp_high')
             state_machine.switch_to('Safe')
         else:
             self.debug_status(vbatt, temp)
+            alerts.clear(self.debug, 'temp_high')
+            alerts.clear(self.debug, 'voltage_low')
 
     async def main_task(self):
         """
