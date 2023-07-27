@@ -40,5 +40,7 @@ alerts = AlertManager(
         'camera_available',
         'image_queue_full',
         'camera_failed',
+        'voltage_low',
+        'temp_high',
     }
 )

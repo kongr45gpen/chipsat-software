@@ -1,7 +1,6 @@
 from datetime import datetime as dt, timezone
 import numpy as np
 import radio_utils.headers as headers
-import Tasks.radio as radio
 from radio_driver import _Packet as Packet
 from pycubed import cubesat
 
@@ -22,18 +21,6 @@ def assert_vector_similar(a, b, leq, angle_tolerance=5, a_tolerance=50, units=""
 def command_data(command_code, args):
     return bytes([headers.COMMAND]) + b'p\xba\xb8C' + command_code + args
 
-class CaptureDownlinks:
-
-    def __init__(self, old):
-        self.result = None
-        self.old = old
-
-    def command(self, payload):
-        self.result = payload
-        self.old(payload)
-
-async def send_cmd(cmd, args):
-    rt = radio.task()
+def send_cmd(cmd, args):
     query_packet = Packet(command_data(cmd, args))
-    cubesat.radio._push_rx_queue(query_packet)
-    await rt.main_task()
+    cubesat.radio.test.push_rx_queue(query_packet)
