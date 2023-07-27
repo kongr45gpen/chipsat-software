@@ -37,5 +37,7 @@ alerts = AlertManager(
         'radio_task_disabled',
         'rtc_available',
         'neopixel_available',
+        'voltage_low',
+        'temp_high',
     }
 )
