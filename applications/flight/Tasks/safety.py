@@ -20,7 +20,7 @@ class task(Task):
         if vbatt < cubesat.LOW_VOLTAGE + 0.1:
             self.debug(f'Voltage too low ({vbatt:.2f}V < {cubesat.LOW_VOLTAGE + 0.1:.2f}V)', log=True)
             alerts.set(self.debug, 'voltage_low')
-        elif temp >= cubesat.HIGH_TEMP - 1:
+        if temp >= cubesat.HIGH_TEMP - 1:
             self.debug(f'Temp too high ({temp:.2f}°C >= {cubesat.HIGH_TEMP - 1:.2f}°C)', log=True)
             alerts.set(self.debug, 'temp_high')
         else:
@@ -34,7 +34,7 @@ class task(Task):
             self.debug(f'Voltage too low ({vbatt:.2f}V < {cubesat.LOW_VOLTAGE:.2f}V) switch to safe mode', log=True)
             alerts.set(self.debug, 'voltage_low')
             state_machine.switch_to('Safe')
-        elif temp > cubesat.HIGH_TEMP:
+        if temp > cubesat.HIGH_TEMP:
             self.debug(f'Temp too high ({temp:.2f}°C > {cubesat.HIGH_TEMP:.2f}°C) switching to safe mode', log=True)
             alerts.set(self.debug, 'temp_high')
             state_machine.switch_to('Safe')
