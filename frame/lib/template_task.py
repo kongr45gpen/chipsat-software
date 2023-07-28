@@ -1,4 +1,3 @@
-import traceback
 
 class Task:
 
@@ -35,6 +34,4 @@ class Task:
         """
         Called when an error is raised in the task.
         """
-        formated_exception = traceback.format_exception(error, error, error.__traceback__)
-        formated_exception = '\n'.join(formated_exception)
-        print(formated_exception)
+        print(error)
