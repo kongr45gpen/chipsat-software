@@ -43,8 +43,7 @@ sha.py
 
 # built files
 build/
-state_machine/build/
-state_machine/output/*
+output/*
 
 # macos metadata files
 .DS_store
