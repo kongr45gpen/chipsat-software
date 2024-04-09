@@ -16,6 +16,7 @@ import pwmio
 import bmx160
 import drv8830
 import opt3001
+import OPT4001
 import camera
 from adafruit_pcf8523 import PCF8523
 from bitflags import bitFlag, multiByte
@@ -72,7 +73,7 @@ class _Satellite:
     instance = None
     data_cache = {}
 
-    cam_pin = digitalio.DigitalInOut(board.CAM_EN)
+    cam_pin = digitalio.DigitalInOut(board.PAYLOAD_EN)
     cam_pin.direction = digitalio.Direction.OUTPUT
 
     # Satellite attributes
@@ -130,7 +131,7 @@ class _Satellite:
         """initialize UART communication with cameraboard
         raise cam_pin high to turn on camera"""
         try:
-            return busio.UART(board.TX, board.RX, baudrate=115200)
+            return busio.UART(board.TX0, board.RX0, baudrate=115200)
         except Exception as e:
             print(f"[ERROR][Initializing UART]: {e}")
 
@@ -274,6 +275,10 @@ class _Satellite:
                 return opt3001.OPT3001(
                     self.i2c(hw_config.SUN_YN_I2C),
                     address=hw_config.SUN_YN_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
+                return OPT4001.OPT4001(
+                    self.i2c(hw_config.SUN_YN_I2C),
+                    address=hw_config.SUN_YN_ADDRESS)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor -Y] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -288,6 +293,10 @@ class _Satellite:
                     address=hw_config.SUN_ZN_ADDRESS)
             elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
                 return opt3001.OPT3001(
+                    self.i2c(hw_config.SUN_ZN_I2C),
+                    address=hw_config.SUN_ZN_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
+                return OPT4001.OPT4001(
                     self.i2c(hw_config.SUN_ZN_I2C),
                     address=hw_config.SUN_ZN_ADDRESS)
         except Exception as e:
@@ -306,6 +315,10 @@ class _Satellite:
                 return opt3001.OPT3001(
                     self.i2c(hw_config.SUN_XN_I2C),
                     address=hw_config.SUN_XN_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
+                return OPT4001.OPT4001(
+                    self.i2c(hw_config.SUN_XN_I2C),
+                    address=hw_config.SUN_XN_ADDRESS)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor -X] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -320,6 +333,10 @@ class _Satellite:
                     address=hw_config.SUN_YP_ADDRESS)
             elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
                 return opt3001.OPT3001(
+                    self.i2c(hw_config.SUN_YP_I2C),
+                    address=hw_config.SUN_YP_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
+                return OPT4001.OPT4001(
                     self.i2c(hw_config.SUN_YP_I2C),
                     address=hw_config.SUN_YP_ADDRESS)
         except Exception as e:
@@ -338,6 +355,10 @@ class _Satellite:
                 return opt3001.OPT3001(
                     self.i2c(hw_config.SUN_ZP_I2C),
                     address=hw_config.SUN_ZP_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
+                return OPT4001.OPT4001(
+                    self.i2c(hw_config.SUN_ZP_I2C),
+                    address=hw_config.SUN_ZP_ADDRESS)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor +Z] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -352,6 +373,10 @@ class _Satellite:
                     address=hw_config.SUN_XP_ADDRESS)
             elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
                 return opt3001.OPT3001(
+                    self.i2c(hw_config.SUN_XP_I2C),
+                    address=hw_config.SUN_XP_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
+                return OPT4001.OPT4001(
                     self.i2c(hw_config.SUN_XP_I2C),
                     address=hw_config.SUN_XP_ADDRESS)
         except Exception as e:
