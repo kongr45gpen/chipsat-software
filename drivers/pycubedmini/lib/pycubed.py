@@ -189,9 +189,15 @@ class _Satellite:
     def vfs(self):
         try:
             vfs = storage.VfsFat(self.sdcard)
-            storage.mount(vfs, "/sd")
-            sys.path.append("/sd")
-            return vfs
+            try:
+                storage.mount(vfs, "/sd")
+                try:
+                    sys.path.append("/sd")
+                    return vfs
+                except Exception as e:
+                    print('[ERROR][Appending VFS]', e)
+            except Exception as e:
+                print('[ERROR][Mounting VFS]', e)
         except Exception as e:
             print('[ERROR][Initializing VFS]', e)
 
