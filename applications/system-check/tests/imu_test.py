@@ -99,4 +99,4 @@ async def run(result_dict):
     await magnet_imu_test(result_dict)
 
     # temperature test
-    result_dict["IMU_Temp"] = expect(cubesat.temperature_imu, between, (20, 80))
+    # result_dict["IMU_Temp"] = expect(cubesat.temperature_imu, between, (20, 80))

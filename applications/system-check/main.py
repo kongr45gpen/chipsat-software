@@ -10,16 +10,16 @@ import tests.current_test
 import tests.sensor_rate_test
 import tests.camera_test
 from print_utils import bold, normal, red, green
-try:
-    import supervisor
-except ImportError:
-    supervisor = None
+# try:
+#     import supervisor
+# except ImportError:
+#     supervisor = None
 import tasko
 
 
 # prevent board from reloading in the middle of the test
-if supervisor is not None:
-    supervisor.disable_autoreload()
+# if supervisor is not None:
+#     supervisor.disable_autoreload()
 
 result_dict = dict()
 

@@ -25,6 +25,12 @@ import configuration.radio_configuration as rf_config
 import adafruit_tsl2561
 import adafruit_ina219
 from adafruit_bno08x.i2c import BNO08X_I2C
+from adafruit_bno08x import (
+    BNO_REPORT_ACCELEROMETER,
+    BNO_REPORT_GYROSCOPE,
+    BNO_REPORT_MAGNETOMETER,
+    BNO_REPORT_ROTATION_VECTOR,
+)
 import time
 import tasko
 from ulab.numpy import array, dot
@@ -139,7 +145,7 @@ class _Satellite:
     def i2c1(self):
         """ Initialize I2C1 bus """
         try:
-            return busio.I2C(board.SCL1, board.SDA1)
+            return busio.I2C(board.SCL1, board.SDA1, frequency=400000)
         except Exception as e:
             print("[ERROR][Initializing I2C1]", e)
 
@@ -221,8 +227,14 @@ class _Satellite:
                     self.i2c(hw_config.IMU_I2C),
                     address=hw_config.IMU_ADDRESS)
             elif hw_config.IMU_TYPE == hw_config.IMU_TYPE_BNO08X:
-                return BNO08X_I2C(self.i2c(hw_config.IMU_I2C),
-                                  address=hw_config.IMU_ADDRESS)
+                bno = BNO08X_I2C(self.i2c(hw_config.IMU_I2C),
+                                 address=hw_config.IMU_ADDRESS)
+                bno.enable_feature(BNO_REPORT_ACCELEROMETER)
+                bno.enable_feature(BNO_REPORT_GYROSCOPE)
+                bno.enable_feature(BNO_REPORT_MAGNETOMETER)
+                bno.enable_feature(BNO_REPORT_ROTATION_VECTOR)
+                return bno
+
         except Exception as e:
             print(f'[ERROR][Initializing IMU] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')

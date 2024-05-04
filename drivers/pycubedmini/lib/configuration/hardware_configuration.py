@@ -51,9 +51,9 @@ if HARDWARE_VERSION == "B3/02":
 
     # IMU back as I2C device
     IMU_I2C = 1
-    IMU_ADDRESS = 0x69
+    IMU_ADDRESS = 0x4B
 
-    R_IMU2BODY = array([[0., -1., 0.], [0., 0., 1.], [-1., 0., 0.]])
+    R_IMU2BODY = array([[-1., 0., 0.], [0., 0., -1.], [0., -1., 0.]])
 
 elif HARDWARE_VERSION == "B3/01":
 

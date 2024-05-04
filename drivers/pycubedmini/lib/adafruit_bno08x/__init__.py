@@ -530,7 +530,7 @@ class BNO08X:  # pylint: disable=too-many-instance-attributes, too-many-public-m
             raise RuntimeError("Could not read ID")
 
     @property
-    def magnetic(self) -> Optional[Tuple[float, float, float]]:
+    def mag(self) -> Optional[Tuple[float, float, float]]:
         """A tuple of the current magnetic field measurements on the X, Y, and Z axes"""
         self._process_available_packets()  # decorator?
         try:
@@ -592,7 +592,7 @@ class BNO08X:  # pylint: disable=too-many-instance-attributes, too-many-public-m
             raise RuntimeError("No lin. accel report found, is it enabled?") from None
 
     @property
-    def acceleration(self) -> Optional[Tuple[float, float, float]]:
+    def accel(self) -> Optional[Tuple[float, float, float]]:
         """A tuple representing the acceleration measurements on the X, Y, and Z
         axes in meters per second squared"""
         self._process_available_packets()
