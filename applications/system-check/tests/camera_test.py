@@ -12,7 +12,6 @@ async def run(result_dict):
         result_dict["uart_test"] = ("could not confirm connection", False)
         return
     result_dict["uart_test"] = uart_test()
-    # print("passed uart test")
     cubesat.cam_pin.value = False
     time.sleep(5)
     cubesat.cam_pin.value = True
