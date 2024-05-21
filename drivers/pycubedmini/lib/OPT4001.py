@@ -23,7 +23,6 @@ from adafruit_register.i2c_bits import RWBits
 from adafruit_register.i2c_bit import ROBit, RWBit
 
 try:
-    import typing
     from busio import I2C
     from typing_extensions import Literal
 except ImportError:

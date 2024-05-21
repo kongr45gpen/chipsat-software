@@ -40,7 +40,7 @@ from .debug import channels, reports
 
 # For IDE type recognition
 try:
-    from typing import Any, Dict, List, Optional, Tuple, Union
+    from typing import Any, Dict, List, Optional, Tuple
     from digitalio import DigitalInOut
 except ImportError:
     pass
@@ -219,7 +219,7 @@ def _elapsed(start_time: float) -> float:
     return time.monotonic() - start_time
 
 
-############ PACKET PARSING ###########################
+# ########### PACKET PARSING ###########################
 def _parse_sensor_report_data(report_bytes: bytearray) -> Tuple[Tuple, int]:
     """Parses reports with only 16-bit fields"""
     data_offset = 4  # this may not always be true
@@ -379,7 +379,7 @@ def _separate_batch(packet: Packet, report_slices: List[Any]) -> None:
             raise RuntimeError("Unprocessable Batch bytes", unprocessed_byte_count)
         # we have enough bytes to read
         # add a slice to the list that was passed in
-        report_slice = packet.data[next_byte_index : next_byte_index + required_bytes]
+        report_slice = packet.data[next_byte_index: next_byte_index + required_bytes]
 
         report_slices.append([report_slice[0], report_slice])
         next_byte_index = next_byte_index + required_bytes
@@ -418,9 +418,7 @@ class Packet:
                 )
 
             if (
-                self.report_id > 0xF0
-                and len(self.data) >= 6
-                and self.data[5] in reports
+                self.report_id > 0xF0 and len(self.data) >= 6 and self.data[5] in reports
             ):
                 outstr += "DBG::\t\t \tSensor Report Type: %s(%s)\n" % (
                     reports[self.data[5]],
@@ -428,9 +426,7 @@ class Packet:
                 )
 
             if (
-                self.report_id == 0xFC
-                and len(self.data) >= 6
-                and self.data[1] in reports
+                self.report_id == 0xFC and len(self.data) >= 6 and self.data[1] in reports
             ):
                 outstr += "DBG::\t\t \tEnabled Feature: %s(%s)\n" % (
                     reports[self.data[1]],
@@ -788,7 +784,7 @@ class BNO08X:  # pylint: disable=too-many-instance-attributes, too-many-public-m
                 return
         raise RuntimeError("Could not save calibration data")
 
-    ############### private/helper methods ###############
+    # ############## private/helper methods ###############
     # # decorator?
     def _process_available_packets(self, max_packets: Optional[int] = None) -> None:
         processed_count = 0
@@ -1075,14 +1071,14 @@ class BNO08X:  # pylint: disable=too-many-instance-attributes, too-many-public-m
         self._dbg("Soft resetting...", end="")
         data = bytearray(1)
         data[0] = 1
-        _seq = self._send_packet(BNO_CHANNEL_EXE, data)
+        self._send_packet(BNO_CHANNEL_EXE, data)
         time.sleep(0.5)
-        _seq = self._send_packet(BNO_CHANNEL_EXE, data)
+        self._send_packet(BNO_CHANNEL_EXE, data)
         time.sleep(0.5)
 
         for _i in range(3):
             try:
-                _packet = self._read_packet()
+                self._read_packet()
             except PacketError:
                 time.sleep(0.5)
 
