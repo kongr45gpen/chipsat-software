@@ -52,7 +52,7 @@ def beacon_packet():
     boot_count = cubesat.c_boot
     vbatt = cubesat.battery_voltage
     cpu_temp = cubesat.temperature_cpu if cubesat.micro else nan
-    imu_temp = cubesat.temperature_imu if cubesat.imu else nan
+    imu_temp = nan
     gyro = cubesat.gyro if cubesat.imu else array([nan, nan, nan])
     mag = cubesat.magnetic if cubesat.imu else array([nan, nan, nan])
     rssi = cubesat.radio.last_rssi if cubesat.radio else nan
