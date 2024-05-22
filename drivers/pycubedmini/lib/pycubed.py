@@ -298,7 +298,9 @@ class _Satellite:
             elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
                 return OPT4001.OPT4001(
                     self.i2c(hw_config.SUN_YN_I2C),
-                    address=hw_config.SUN_YN_ADDRESS)
+                    address=hw_config.SUN_YN_ADDRESS,
+                    conversion_time=4,
+                    operating_mode=3)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor -Y] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -318,7 +320,9 @@ class _Satellite:
             elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
                 return OPT4001.OPT4001(
                     self.i2c(hw_config.SUN_ZN_I2C),
-                    address=hw_config.SUN_ZN_ADDRESS)
+                    address=hw_config.SUN_ZN_ADDRESS,
+                    conversion_time=4,
+                    operating_mode=3)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor -Z] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -338,7 +342,9 @@ class _Satellite:
             elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
                 return OPT4001.OPT4001(
                     self.i2c(hw_config.SUN_XN_I2C),
-                    address=hw_config.SUN_XN_ADDRESS)
+                    address=hw_config.SUN_XN_ADDRESS,
+                    conversion_time=4,
+                    operating_mode=3)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor -X] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -358,7 +364,9 @@ class _Satellite:
             elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
                 return OPT4001.OPT4001(
                     self.i2c(hw_config.SUN_YP_I2C),
-                    address=hw_config.SUN_YP_ADDRESS)
+                    address=hw_config.SUN_YP_ADDRESS,
+                    conversion_time=4,
+                    operating_mode=3)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor +Y] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -378,7 +386,9 @@ class _Satellite:
             elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
                 return OPT4001.OPT4001(
                     self.i2c(hw_config.SUN_ZP_I2C),
-                    address=hw_config.SUN_ZP_ADDRESS)
+                    address=hw_config.SUN_ZP_ADDRESS,
+                    conversion_time=4,
+                    operating_mode=3)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor +Z] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -398,7 +408,9 @@ class _Satellite:
             elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
                 return OPT4001.OPT4001(
                     self.i2c(hw_config.SUN_XP_I2C),
-                    address=hw_config.SUN_XP_ADDRESS)
+                    address=hw_config.SUN_XP_ADDRESS,
+                    conversion_time=4,
+                    operating_mode=3)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor +X] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
