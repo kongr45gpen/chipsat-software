@@ -76,7 +76,6 @@ def system_packet():
     lux_xn = cubesat.sun_xn.lux if cubesat.sun_xn and cubesat.sun_xn.lux is not None else nan
     lux_yn = cubesat.sun_yn.lux if cubesat.sun_yn and cubesat.sun_yn.lux is not None else nan
     lux_zn = cubesat.sun_zn.lux if cubesat.sun_zn and cubesat.sun_zn.lux is not None else nan
-    print(lux_xp, lux_yp, lux_zp)
     return struct.pack(system_format,
                        lux_xp, lux_yp, lux_zp,
                        lux_xn, lux_yn, lux_zn)
