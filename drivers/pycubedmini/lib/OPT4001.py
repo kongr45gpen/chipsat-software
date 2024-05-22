@@ -362,7 +362,7 @@ class OPT4001:
         adc_codes = mantissa << exponent
         lux = adc_codes * .0004375
 
-        return lux if just_lux else lux, counter, crc
+        return lux if just_lux else (lux, counter, crc)
 
     def read_from_fifo(self, register_high, regist_low, just_lux):
         """
