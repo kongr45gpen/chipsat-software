@@ -18,8 +18,8 @@ import tasko
 
 
 # prevent board from reloading in the middle of the test
-if supervisor is not None:
-    supervisor.disable_autoreload()
+# if supervisor is not None:
+#     supervisor.disable_autoreload()
 
 result_dict = dict()
 

@@ -52,11 +52,11 @@ def beacon_packet():
     boot_count = cubesat.c_boot
     vbatt = cubesat.battery_voltage
     cpu_temp = cubesat.temperature_cpu if cubesat.micro else nan
-    imu_temp = cubesat.temperature_imu if cubesat.imu else nan
+    imu_temp = nan
     gyro = cubesat.gyro if cubesat.imu else array([nan, nan, nan])
     mag = cubesat.magnetic if cubesat.imu else array([nan, nan, nan])
     rssi = cubesat.radio.last_rssi if cubesat.radio else nan
-    fei = cubesat.radio.frequency_error if cubesat.radio else nan
+    fei = nan
     return struct.pack(beacon_format,
                        state_byte, flags, software_error, boot_count,
                        vbatt, cpu_temp, imu_temp,
@@ -76,6 +76,7 @@ def system_packet():
     lux_xn = cubesat.sun_xn.lux if cubesat.sun_xn and cubesat.sun_xn.lux is not None else nan
     lux_yn = cubesat.sun_yn.lux if cubesat.sun_yn and cubesat.sun_yn.lux is not None else nan
     lux_zn = cubesat.sun_zn.lux if cubesat.sun_zn and cubesat.sun_zn.lux is not None else nan
+    print(lux_xp, lux_yp, lux_zp)
     return struct.pack(system_format,
                        lux_xp, lux_yp, lux_zp,
                        lux_xn, lux_yn, lux_zn)

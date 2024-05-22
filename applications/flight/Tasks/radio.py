@@ -84,10 +84,10 @@ class task(Task):
                 self.on_uplink()
                 header = response[0]
                 response = response[1:]  # remove the header byte
-
+                info = cubesat.radio.packet_info()
                 self.debug(f'Recieved msg "{response}", ' +
-                           f'RSSI: {cubesat.radio.last_rssi}, ' +
-                           f'FEI: {cubesat.radio.frequency_error}')
+                           f'{info[0]}: {info[1]}, ' +
+                           f'{info[2]}: {info[3]}')
 
                 if (header == headers.MEMORY_BUFFERED_START or
                         header == headers.MEMORY_BUFFERED_MID or
