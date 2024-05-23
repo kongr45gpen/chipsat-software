@@ -1,6 +1,7 @@
 from ulab.numpy import array
 
-HARDWARE_VERSION = "B3/02"      # April 2024
+HARDWARE_VERSION = "B3/03"      # April 2024
+# B3/02 made no relevant hardware updates
 # HARDWARE_VERSION = "B3/01"    # April 2023
 # HARDWARE_VERSION = "B2/01"    # new flight boards (Dec 2022)
 # HARDWARE_VERSION = "B1/02"    # Oct 2022
@@ -13,7 +14,7 @@ SUN_TYPE_OPT4001 = 3
 IMU_TYPE_BMX160 = 1
 IMU_TYPE_BNO08X = 2
 
-if HARDWARE_VERSION == "B3/02":
+if HARDWARE_VERSION == "B3/03":
     SUN_TYPE = SUN_TYPE_OPT4001
     IMU_TYPE = IMU_TYPE_BNO08X
 

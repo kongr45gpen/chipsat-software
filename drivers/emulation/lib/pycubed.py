@@ -80,7 +80,7 @@ class _Satellite:
         self.camera = Camera()
 
         self.data_cache = {}
-        
+
         self.has_imu_temp = True
 
         # magnetometer and accelerometer chosen to be arbitrary non zero, non parallel values
