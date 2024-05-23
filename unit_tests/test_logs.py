@@ -1,6 +1,6 @@
 import unittest
 import sys
-from numpy import testing, array
+from numpy import testing, array, nan
 import time
 
 sys.path.insert(0, './drivers/emulation')
