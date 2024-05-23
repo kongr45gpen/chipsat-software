@@ -3,7 +3,6 @@ CircuitPython driver for PyCubed-Mini
 """
 
 import sdcardio
-import pycubed_rfm9x_fsk
 import pycubed_rfm9x_lora
 import board
 import microcontroller
