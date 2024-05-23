@@ -224,10 +224,12 @@ class _Satellite:
         """ Define IMU parameters and initialize """
         try:
             if hw_config.IMU_TYPE == hw_config.IMU_TYPE_BMX160:
+                self.has_imu_temp = True
                 return bmx160.BMX160_I2C(
                     self.i2c(hw_config.IMU_I2C),
                     address=hw_config.IMU_ADDRESS)
             elif hw_config.IMU_TYPE == hw_config.IMU_TYPE_BNO08X:
+                self.has_imu_temp = False
                 bno = BNO08X_I2C(self.i2c(hw_config.IMU_I2C),
                                  address=hw_config.IMU_ADDRESS)
                 bno.enable_feature(BNO_REPORT_ACCELEROMETER)

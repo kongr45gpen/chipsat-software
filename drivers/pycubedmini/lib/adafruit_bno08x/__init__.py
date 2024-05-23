@@ -520,7 +520,7 @@ class BNO08X:  # pylint: disable=too-many-instance-attributes, too-many-public-m
             try:
                 if self._check_id():
                     break
-            except:  # pylint:disable=bare-except
+            except:  # noqa: E722
                 time.sleep(0.5)
         else:
             raise RuntimeError("Could not read ID")
