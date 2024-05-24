@@ -16,6 +16,7 @@ import pwmio
 import bmx160
 import drv8830
 import opt3001
+import OPT4001
 import camera
 from adafruit_pcf8523 import PCF8523
 from bitflags import bitFlag, multiByte
@@ -23,6 +24,13 @@ import configuration.hardware_configuration as hw_config
 import configuration.radio_configuration as rf_config
 import adafruit_tsl2561
 import adafruit_ina219
+from adafruit_bno08x.i2c import BNO08X_I2C
+from adafruit_bno08x import (
+    BNO_REPORT_ACCELEROMETER,
+    BNO_REPORT_GYROSCOPE,
+    BNO_REPORT_MAGNETOMETER,
+    BNO_REPORT_ROTATION_VECTOR,
+)
 import time
 import tasko
 from ulab.numpy import array, dot
@@ -71,7 +79,7 @@ class _Satellite:
     instance = None
     data_cache = {}
 
-    cam_pin = digitalio.DigitalInOut(board.CAM_EN)
+    cam_pin = digitalio.DigitalInOut(board.PAYLOAD_EN)
     cam_pin.direction = digitalio.Direction.OUTPUT
 
     # Satellite attributes
@@ -129,7 +137,7 @@ class _Satellite:
         """initialize UART communication with cameraboard
         raise cam_pin high to turn on camera"""
         try:
-            return busio.UART(board.TX, board.RX, baudrate=115200)
+            return busio.UART(board.TX0, board.RX0, baudrate=115200)
         except Exception as e:
             print(f"[ERROR][Initializing UART]: {e}")
 
@@ -137,7 +145,7 @@ class _Satellite:
     def i2c1(self):
         """ Initialize I2C1 bus """
         try:
-            return busio.I2C(board.SCL1, board.SDA1)
+            return busio.I2C(board.SCL1, board.SDA1, frequency=400000)
         except Exception as e:
             print("[ERROR][Initializing I2C1]", e)
 
@@ -187,9 +195,15 @@ class _Satellite:
     def vfs(self):
         try:
             vfs = storage.VfsFat(self.sdcard)
-            storage.mount(vfs, "/sd")
-            sys.path.append("/sd")
-            return vfs
+            try:
+                storage.mount(vfs, "/sd")
+                try:
+                    sys.path.append("/sd")
+                    return vfs
+                except Exception as e:
+                    print('[ERROR][Appending VFS]', e)
+            except Exception as e:
+                print('[ERROR][Mounting VFS]', e)
         except Exception as e:
             print('[ERROR][Initializing VFS]', e)
 
@@ -209,11 +223,20 @@ class _Satellite:
         """ Define IMU parameters and initialize """
         try:
             if hw_config.IMU_TYPE == hw_config.IMU_TYPE_BMX160:
+                self.has_imu_temp = True
                 return bmx160.BMX160_I2C(
                     self.i2c(hw_config.IMU_I2C),
                     address=hw_config.IMU_ADDRESS)
             elif hw_config.IMU_TYPE == hw_config.IMU_TYPE_BNO08X:
-                return None
+                self.has_imu_temp = False
+                bno = BNO08X_I2C(self.i2c(hw_config.IMU_I2C),
+                                 address=hw_config.IMU_ADDRESS)
+                bno.enable_feature(BNO_REPORT_ACCELEROMETER)
+                bno.enable_feature(BNO_REPORT_GYROSCOPE)
+                bno.enable_feature(BNO_REPORT_MAGNETOMETER)
+                bno.enable_feature(BNO_REPORT_ROTATION_VECTOR)
+                return bno
+
         except Exception as e:
             print(f'[ERROR][Initializing IMU] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -272,6 +295,12 @@ class _Satellite:
                 return opt3001.OPT3001(
                     self.i2c(hw_config.SUN_YN_I2C),
                     address=hw_config.SUN_YN_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
+                return OPT4001.OPT4001(
+                    self.i2c(hw_config.SUN_YN_I2C),
+                    address=hw_config.SUN_YN_ADDRESS,
+                    conversion_time=4,
+                    operating_mode=3)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor -Y] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -288,6 +317,12 @@ class _Satellite:
                 return opt3001.OPT3001(
                     self.i2c(hw_config.SUN_ZN_I2C),
                     address=hw_config.SUN_ZN_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
+                return OPT4001.OPT4001(
+                    self.i2c(hw_config.SUN_ZN_I2C),
+                    address=hw_config.SUN_ZN_ADDRESS,
+                    conversion_time=4,
+                    operating_mode=3)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor -Z] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -304,6 +339,12 @@ class _Satellite:
                 return opt3001.OPT3001(
                     self.i2c(hw_config.SUN_XN_I2C),
                     address=hw_config.SUN_XN_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
+                return OPT4001.OPT4001(
+                    self.i2c(hw_config.SUN_XN_I2C),
+                    address=hw_config.SUN_XN_ADDRESS,
+                    conversion_time=4,
+                    operating_mode=3)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor -X] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -320,6 +361,12 @@ class _Satellite:
                 return opt3001.OPT3001(
                     self.i2c(hw_config.SUN_YP_I2C),
                     address=hw_config.SUN_YP_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
+                return OPT4001.OPT4001(
+                    self.i2c(hw_config.SUN_YP_I2C),
+                    address=hw_config.SUN_YP_ADDRESS,
+                    conversion_time=4,
+                    operating_mode=3)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor +Y] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -336,6 +383,12 @@ class _Satellite:
                 return opt3001.OPT3001(
                     self.i2c(hw_config.SUN_ZP_I2C),
                     address=hw_config.SUN_ZP_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
+                return OPT4001.OPT4001(
+                    self.i2c(hw_config.SUN_ZP_I2C),
+                    address=hw_config.SUN_ZP_ADDRESS,
+                    conversion_time=4,
+                    operating_mode=3)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor +Z] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
@@ -352,6 +405,12 @@ class _Satellite:
                 return opt3001.OPT3001(
                     self.i2c(hw_config.SUN_XP_I2C),
                     address=hw_config.SUN_XP_ADDRESS)
+            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
+                return OPT4001.OPT4001(
+                    self.i2c(hw_config.SUN_XP_I2C),
+                    address=hw_config.SUN_XP_ADDRESS,
+                    conversion_time=4,
+                    operating_mode=3)
         except Exception as e:
             print(f'[ERROR][Initializing Sun Sensor +X] {e}, ' +
                   f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')

@@ -10,14 +10,15 @@ async def run(result_dict):
     time.sleep(2)
     if not cubesat.camera.get_confirmation(True):
         result_dict["uart_test"] = ("could not confirm connection", False)
+        return
     result_dict["uart_test"] = uart_test()
-    print("passed uart test")
     cubesat.cam_pin.value = False
     time.sleep(5)
     cubesat.cam_pin.value = True
     time.sleep(2)
     if not cubesat.camera.get_confirmation():
         result_dict["camera_test"] = ("could not confirm camera test", False)
+        return
     time.sleep(1)
     result_dict["camera_test"] = camera_test()
     cubesat.cam_pin.value = False

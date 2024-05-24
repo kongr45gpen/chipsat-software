@@ -4,6 +4,7 @@ Attempts to ensure the driver gives results in the satellite reference frame.
 """
 
 from lib.pycubed import cubesat
+import lib.configuration.hardware_configuration as hw_config
 from print_utils import bold, normal
 import time
 from test_utils import expect, less_in_magnitude, greater_in_magnitude, vec_approx_equal_generator
@@ -99,4 +100,6 @@ async def run(result_dict):
     await magnet_imu_test(result_dict)
 
     # temperature test
-    result_dict["IMU_Temp"] = expect(cubesat.temperature_imu, between, (20, 80))
+    # cannot be done with BNO08x as no temperature sensor exists
+    if hw_config.IMU_TYPE == hw_config.IMU_TYPE_BMX160:
+        result_dict["IMU_Temp"] = expect(cubesat.temperature_imu, between, (20, 80))
