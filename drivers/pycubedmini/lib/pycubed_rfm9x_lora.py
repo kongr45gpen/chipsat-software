@@ -567,7 +567,7 @@ class RFM9x:
         lsb = self._read_u8(_RH_RF95_REG_28_FEI_LSB)
         t_fei_val = lsb | (mib << 8) | (msb << 16)
         fei_val = (0xFFFFF) - t_fei_val if msb > 7 else t_fei_val
-        f_error = ((fei_val * (1 << 24)) / (32 * 1000000)) * (125 / 500)
+        f_error = ((fei_val * (1 << 24)) / 32000000) * 0.25
         return f_error
 
     @property
