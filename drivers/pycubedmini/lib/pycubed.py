@@ -29,7 +29,6 @@ from adafruit_bno08x import (
     BNO_REPORT_ACCELEROMETER,
     BNO_REPORT_GYROSCOPE,
     BNO_REPORT_MAGNETOMETER,
-    BNO_REPORT_ROTATION_VECTOR,
 )
 import time
 import tasko
@@ -234,7 +233,6 @@ class _Satellite:
                 bno.enable_feature(BNO_REPORT_ACCELEROMETER)
                 bno.enable_feature(BNO_REPORT_GYROSCOPE)
                 bno.enable_feature(BNO_REPORT_MAGNETOMETER)
-                bno.enable_feature(BNO_REPORT_ROTATION_VECTOR)
                 return bno
 
         except Exception as e:
