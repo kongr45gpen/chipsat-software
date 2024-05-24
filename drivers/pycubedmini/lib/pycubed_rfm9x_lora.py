@@ -83,6 +83,10 @@ _RH_RF95_REG_24_HOP_PERIOD = const(0x24)
 _RH_RF95_REG_25_FIFO_RX_BYTE_ADDR = const(0x25)
 _RH_RF95_REG_26_MODEM_CONFIG3 = const(0x26)
 
+_RH_RF95_REG_28_FEI_MS = const(0x28)
+_RH_RF95_REG_28_FEI_MI = const(0x29)
+_RH_RF95_REG_28_FEI_LSB = const(0x2A)
+
 _RH_RF95_REG_40_DIO_MAPPING1 = const(0x40)
 _RH_RF95_REG_41_DIO_MAPPING2 = const(0x41)
 _RH_RF95_REG_42_VERSION = const(0x42)
@@ -554,6 +558,17 @@ class RFM9x:
         if snr_byte > 127:
             snr_byte = (256 - snr_byte) * -1
         return snr_byte / 4
+
+    @property
+    def frequency_error(self) -> float:
+        """"""
+        msb = self._read_u8(_RH_RF95_REG_28_FEI_MS) & 0x0F
+        mib = self._read_u8(_RH_RF95_REG_28_FEI_MI)
+        lsb = self._read_u8(_RH_RF95_REG_28_FEI_LSB)
+        t_fei_val = lsb | (mib << 8) | (msb << 16)
+        fei_val = (0xFFFFF) - t_fei_val if msb > 7 else t_fei_val
+        f_error = ((fei_val * (1 << 24)) / (32 * 1000000)) * (125 / 500)
+        return f_error
 
     @property
     def signal_bandwidth(self) -> int:

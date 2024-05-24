@@ -56,7 +56,7 @@ def beacon_packet():
     gyro = cubesat.gyro if cubesat.imu else array([nan, nan, nan])
     mag = cubesat.magnetic if cubesat.imu else array([nan, nan, nan])
     rssi = cubesat.radio.last_rssi if cubesat.radio else nan
-    fei = nan
+    fei = cubesat.radio.frequency_error if cubesat.radio else nan
     return struct.pack(beacon_format,
                        state_byte, flags, software_error, boot_count,
                        vbatt, cpu_temp, imu_temp,
