@@ -3,7 +3,7 @@ CircuitPython driver for PyCubed-Mini
 """
 
 import sdcardio
-import pycubed_rfm9x_fsk
+import pycubed_rfm9x_lora
 import board
 import microcontroller
 import busio
@@ -29,7 +29,6 @@ from adafruit_bno08x import (
     BNO_REPORT_ACCELEROMETER,
     BNO_REPORT_GYROSCOPE,
     BNO_REPORT_MAGNETOMETER,
-    BNO_REPORT_ROTATION_VECTOR,
 )
 import time
 import tasko
@@ -234,7 +233,6 @@ class _Satellite:
                 bno.enable_feature(BNO_REPORT_ACCELEROMETER)
                 bno.enable_feature(BNO_REPORT_GYROSCOPE)
                 bno.enable_feature(BNO_REPORT_MAGNETOMETER)
-                bno.enable_feature(BNO_REPORT_ROTATION_VECTOR)
                 return bno
 
         except Exception as e:
@@ -257,19 +255,18 @@ class _Satellite:
             print('[ERROR][Initializing Radio]', e)
 
         try:
-            radio = pycubed_rfm9x_fsk.RFM9x(
-                self.spi,
-                self._rf_cs,
-                self._rf_rst,
-                rf_config.FREQUENCY,
-                checksum=rf_config.CHECKSUM)
+            radio = pycubed_rfm9x_lora.RFM9x(self.spi,
+                                             self._rf_cs,
+                                             self._rf_rst,
+                                             rf_config.FREQUENCY,
+                                             checksum=rf_config.CHECKSUM)
+            radio.spreading_factor = rf_config.SPREADING_FACTOR
+            radio.coding_rate = rf_config.CODING_RATE
+            radio.signal_bandwidth = rf_config.SIGNAL_BANDWIDTH
 
             radio.dio0 = self.radio_DIO0
 
             radio.tx_power = rf_config.TX_POWER
-            radio.bitrate = rf_config.BITRATE
-            radio.frequency_deviation = rf_config.FREQUENCY_DEVIATION
-            radio.rx_bandwidth = rf_config.RX_BANDWIDTH
             radio.preamble_length = rf_config.PREAMBLE_LENGTH
             radio.ack_delay = rf_config.ACK_DELAY
             radio.ack_wait = rf_config.ACK_WAIT

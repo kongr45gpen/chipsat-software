@@ -83,6 +83,10 @@ _RH_RF95_REG_24_HOP_PERIOD = const(0x24)
 _RH_RF95_REG_25_FIFO_RX_BYTE_ADDR = const(0x25)
 _RH_RF95_REG_26_MODEM_CONFIG3 = const(0x26)
 
+_RH_RF95_REG_28_FEI_MS = const(0x28)
+_RH_RF95_REG_28_FEI_MI = const(0x29)
+_RH_RF95_REG_28_FEI_LSB = const(0x2A)
+
 _RH_RF95_REG_40_DIO_MAPPING1 = const(0x40)
 _RH_RF95_REG_41_DIO_MAPPING2 = const(0x41)
 _RH_RF95_REG_42_VERSION = const(0x42)
@@ -268,7 +272,8 @@ class RFM9x:
         high_power: bool = True,
         baudrate: int = 5000000,
         agc: bool = False,
-        crc: bool = True
+        crc: bool = True,
+        checksum: bool = True
     ) -> None:
         self.high_power = high_power
         # Device support SPI mode 0 (polarity & phase = 0) up to a max of 10mhz.
@@ -376,6 +381,7 @@ class RFM9x:
            Fourth byte of the RadioHead header.
         """
         self.crc_error_count = 0
+        self.checksum = checksum
 
     # pylint: disable=no-member
     # Reconsider pylint: disable when this can be tested
@@ -554,6 +560,17 @@ class RFM9x:
         return snr_byte / 4
 
     @property
+    def frequency_error(self) -> float:
+        """"""
+        msb = self._read_u8(_RH_RF95_REG_28_FEI_MS) & 0x0F
+        mib = self._read_u8(_RH_RF95_REG_28_FEI_MI)
+        lsb = self._read_u8(_RH_RF95_REG_28_FEI_LSB)
+        t_fei_val = lsb | (mib << 8) | (msb << 16)
+        fei_val = (0xFFFFF) - t_fei_val if msb > 7 else t_fei_val
+        f_error = ((fei_val * (1 << 24)) / 32000000) * 0.25
+        return f_error
+
+    @property
     def signal_bandwidth(self) -> int:
         """The signal bandwidth used by the radio (try setting to a higher
         value to increase throughput or to a lower value to increase the
@@ -682,6 +699,15 @@ class RFM9x:
         """crc status"""
         return (self._read_u8(_RH_RF95_REG_12_IRQ_FLAGS) & 0x20) >> 5
 
+    def fifo_empty(self) -> bool:
+        return True
+
+    def packet_info(self) -> tuple:
+        return ("RSSI", self.last_rssi, "SNR", self.last_snr)
+
+    def check_packet(self, packet) -> None:
+        assert (len(packet) <= 241)
+
     # pylint: disable=too-many-branches
     async def send(
         self,
@@ -717,24 +743,31 @@ class RFM9x:
         # Fill the FIFO with a packet to send.
         self._write_u8(_RH_RF95_REG_0D_FIFO_ADDR_PTR, 0x00)  # FIFO starts at 0.
         # Combine header and data to form payload
-        payload = bytearray(4)
+        payload = bytearray(5)
+        payload[0] = len(payload) + len(data) - 1
         if destination is None:  # use attribute
-            payload[0] = self.destination
+            payload[1] = self.destination
         else:  # use kwarg
-            payload[0] = destination
+            payload[1] = destination
         if node is None:  # use attribute
-            payload[1] = self.node
+            payload[2] = self.node
         else:  # use kwarg
-            payload[1] = node
+            payload[2] = node
         if identifier is None:  # use attribute
-            payload[2] = self.identifier
+            payload[3] = self.identifier
         else:  # use kwarg
-            payload[2] = identifier
+            payload[3] = identifier
         if flags is None:  # use attribute
-            payload[3] = self.flags
+            payload[4] = self.flags
         else:  # use kwarg
-            payload[3] = flags
+            payload[4] = flags
         payload = payload + data
+
+        if self.checksum:
+            payload[0] += 2
+            checksum = bsd_checksum(payload)
+            payload = payload + checksum
+
         # Write payload.
         self._write_from(_RH_RF95_REG_00_FIFO, payload)
         # Write payload and header length.
@@ -790,9 +823,9 @@ class RFM9x:
                 # wait for a packet from our destination
                 ack_packet = await self.receive(timeout=self.ack_wait, with_header=True)
                 if ack_packet is not None:
-                    if ack_packet[3] & _RH_FLAGS_ACK:
+                    if ack_packet[4] & _RH_FLAGS_ACK:
                         # check the ID
-                        if ack_packet[2] == self.identifier:
+                        if ack_packet[3] == self.identifier:
                             got_ack = True
                             break
             # pause before next retry -- random delay
@@ -881,18 +914,20 @@ class RFM9x:
                 self._write_u8(_RH_RF95_REG_12_IRQ_FLAGS, 0xFF)
                 if fifo_length < 5:
                     packet = None
+                    print(f"incomplete packet {fifo_length} < 5: packet = {str(packet)}")
                 else:
                     if (
                         self.node != _RH_BROADCAST_ADDRESS
-                        and packet[0] != _RH_BROADCAST_ADDRESS
-                        and packet[0] != self.node
+                        and packet[1] != _RH_BROADCAST_ADDRESS
+                        and packet[1] != self.node
                     ):
                         packet = None
+                        print(f"address incorrect: {self.node} != {packet[1]} != {_RH_BROADCAST_ADDRESS}")
                     # send ACK unless this was an ACK or a broadcast
                     elif (
                         with_ack
-                        and ((packet[3] & _RH_FLAGS_ACK) == 0)
-                        and (packet[0] != _RH_BROADCAST_ADDRESS)
+                        and ((packet[4] & _RH_FLAGS_ACK) == 0)
+                        and (packet[1] != _RH_BROADCAST_ADDRESS)
                     ):
                         # delay before sending Ack to give receiver a chance to get ready
                         if self.ack_delay is not None:
@@ -900,22 +935,25 @@ class RFM9x:
                         # send ACK packet to sender (data is b'!')
                         await self.send(
                             b"!",
-                            destination=packet[1],
-                            node=packet[0],
-                            identifier=packet[2],
-                            flags=(packet[3] | _RH_FLAGS_ACK),
+                            destination=packet[2],
+                            node=packet[1],
+                            identifier=packet[3],
+                            flags=(packet[4] | _RH_FLAGS_ACK),
                         )
                         # reject Retries if we have seen this idetifier from this source before
-                        if (self.seen_ids[packet[1]] == packet[2]) and (
-                            packet[3] & _RH_FLAGS_RETRY
+                        if (self.seen_ids[packet[2]] == packet[3]) and (
+                            packet[4] & _RH_FLAGS_RETRY
                         ):
                             packet = None
                         else:  # save the packet identifier for this source
-                            self.seen_ids[packet[1]] = packet[2]
+                            self.seen_ids[packet[2]] = packet[3]
                     if (
                         not with_header and packet is not None
                     ):  # skip the header if not wanted
-                        packet = packet[4:]
+                        # remove checksum
+                        packet = packet[:-2]
+                        #remove header
+                        packet = packet[5:]
         # Listen again if necessary and return the result packet.
         if keep_listening:
             self.listen()
@@ -925,3 +963,13 @@ class RFM9x:
         # Clear interrupt.
         self._write_u8(_RH_RF95_REG_12_IRQ_FLAGS, 0xFF)
         return packet
+
+def bsd_checksum(bytedata):
+    """Very simple, not secure, but fast 2 byte checksum"""
+    checksum = 0
+
+    for b in bytedata:
+        checksum = (checksum >> 1) + ((checksum & 1) << 15)
+        checksum += b
+        checksum &= 0xffff
+    return bytes([checksum >> 8, checksum & 0xff])

@@ -1,2 +1,2 @@
-TX_ALLOWED = False
-RX_ALLOWED = False
+TX_ALLOWED = True
+RX_ALLOWED = True
