@@ -195,14 +195,15 @@ def clear_tx_queue(task):
     tq.clear()
     task.debug('Cleared transmission queue')
 
-
 def request_image(task):
     if iq.empty():
         task.debug("empty image queue")
         tq.push(Message(9, b'empty image queue', with_ack=True))
-    filepath = iq.pop()
-    # create Image message
-    img = ImageMessage(filepath)
+    else:
+        filepath = iq.pop()
+        # create Image message
+        img = ImageMessage(filepath)
+        tq.push(img)
 
 
 """
