@@ -41,7 +41,6 @@ class PriorityQueue:
         else:
             raise Exception("Queue is full")
 
-
     def pop(self):
         """Pop the largest item off the heap, maintaining the heap invariant.
 
@@ -68,10 +67,10 @@ class PriorityQueue:
 
     def size(self) -> int:
         return len(self.queue)
-    
+
     def peek(self):
         return self.queue[0]
-    
+
     def clear(self) -> None:
         self.queue = []
 
