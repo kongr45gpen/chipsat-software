@@ -5,11 +5,13 @@
 
 Usage:
 
->>> heap = []         # creates an empty heap
->>> push(heap, item)  # pushes a new item on the heap
->>> item = pop(heap)  # pops the largest item from the heap
->>> item = heap[0]    # largest item on the heap without popping it
->>> heapify(x)        # transforms list into a heap, in-place, in linear time
+>>> heap = PriorityQueue([], 100)   # creates an empty heap with limit 100
+>>> heap.push(item)                 # pushes a new item on the heap if under limit
+>>> item = heap.pop()               # pops the largest item from the heap
+>>> item = heap.peek()              # largest item on the heap without popping it
+>>> heap.heapifu()                  # transforms list into a heap, in-place, in linear time
+
+All Items used in this should have a priority property for comparison
 """
 
 
@@ -117,6 +119,6 @@ class PriorityQueue:
     def __str__(self) -> str:
         s = '['
         for idx, item in enumerate(self.queue):
-            s += f'(idx: {idx}, priority: {item.priority}, {item.contents})'
+            s += f'(idx: {idx}, priority: {item.priority}, {item})'
         s += ']'
         return s
