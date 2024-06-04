@@ -9,7 +9,7 @@ Usage:
 >>> heap.push(item)                 # pushes a new item on the heap if under limit
 >>> item = heap.pop()               # pops the largest item from the heap
 >>> item = heap.peek()              # largest item on the heap without popping it
->>> heap.heapifu()                  # transforms list into a heap, in-place, in linear time
+>>> heap.heapify()                  # transforms list into a heap, in-place, in linear time
 
 All Items used in this should have a priority property for comparison
 """
