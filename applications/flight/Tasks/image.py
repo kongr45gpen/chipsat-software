@@ -1,5 +1,5 @@
 from Tasks.log import LogTask as Task
-import radio_utils.image_queue as iq
+from radio_utils.image_queue import image_queue as iq
 from pycubed import cubesat
 from time import monotonic, localtime
 from gc import collect
