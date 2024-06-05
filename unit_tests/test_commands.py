@@ -12,7 +12,7 @@ import Tasks.radio as radio
 import radio_utils.commands as cdh
 from state_machine import state_machine
 from testutils import send_cmd
-from radio_utils import transmission_queue as tq
+from radio_utils.transmission_queue import transmission_queue as tq
 from radio_utils import message
 from pycubed import cubesat
 import settings
