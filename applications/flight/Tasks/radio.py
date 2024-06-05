@@ -4,7 +4,7 @@ Radio Task:
 Manages all radio communication for the cubesat.
 """
 from Tasks.log import LogTask as Task
-import radio_utils.transmission_queue as tq
+from radio_utils.transmission_queue import transmission_queue as tq
 import radio_utils.commands as cdh
 import radio_utils.headers as headers
 import radio_utils.message as message

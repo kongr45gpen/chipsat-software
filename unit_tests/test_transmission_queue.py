@@ -2,8 +2,9 @@ import unittest
 import sys
 
 sys.path.insert(0, 'applications/flight/lib')
+sys.path.insert(1, 'applications/flight/lib/radio_utils')
 
-from radio_utils import transmission_queue as tq  # noqa: E402
+from radio_utils.transmission_queue import transmission_queue as tq  # noqa: E402
 
 class Test(unittest.TestCase):
 

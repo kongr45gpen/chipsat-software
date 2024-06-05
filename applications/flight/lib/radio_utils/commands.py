@@ -7,7 +7,7 @@ import time
 import os
 from pycubed import cubesat
 import radio_utils
-from radio_utils import transmission_queue as tq
+from radio_utils.transmission_queue import transmission_queue as tq
 from radio_utils import image_queue as iq
 from radio_utils import headers
 from radio_utils.disk_buffered_message import DiskBufferedMessage
