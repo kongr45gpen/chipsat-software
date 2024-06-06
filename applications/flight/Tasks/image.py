@@ -65,7 +65,7 @@ class task(Task):
                 if 'images' not in os.listdir('/sd'):
                     files.mkdirp('/sd/images')
             except Exception as e:
-                self.debug("could not initialize images directory", level=2)
+                self.debug(f"could not initialize images directory: {e}", level=2)
         elif (not self.cam_active) and self.cam_on:
             # await self.get_confirmation(st)
             self.debug("checking camera connection...")
