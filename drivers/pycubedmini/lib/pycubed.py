@@ -81,6 +81,10 @@ class _Satellite:
     cam_pin = digitalio.DigitalInOut(board.PAYLOAD_EN)
     cam_pin.direction = digitalio.Direction.OUTPUT
 
+    watchdog_pin = digitalio.DigitalInOut(board.WDT_EN)
+    watchdog_pin.direction = digitalio.Direction.OUTPUT
+    watchdog_pin.value = True
+
     # Satellite attributes
     LOW_VOLTAGE = 3.6  # needs to be higher than harvester IC VBAT_OK ON threshold
     # Max operating temp on specsheet for ATSAMD51J19A (Celsius)
