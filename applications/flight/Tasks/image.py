@@ -24,7 +24,7 @@ class task(Task):
     name = 'image'
     color = 'blue'
 
-    last_time = monotonic()
+    last_time = 0
     cam_on = False
     cam_active = False
     conf_attempts = 0
@@ -35,7 +35,8 @@ class task(Task):
         """
         clock that returns True every 60 seconds
         """
-        if monotonic() - 60 > self.last_time:
+        self.debug("last image was taken {} ago".format(monotonic() - self.last_time))
+        if self.last_time == 0 or monotonic() - 60 > self.last_time:
             self.last_time = monotonic()
             return True
         return False

@@ -19,10 +19,11 @@ class task(Task):
 
         try:
             self.write_telemetry()
-        except Exception:
+        except Exception as e:
             boot = cubesat.c_boot
             files.mkdirp(f'/sd/logs/telemetry/{boot:05}')
             self.write_telemetry()
+            print("Could not write telemetry: {}".format(e))
 
     def write_telemetry(self):
         if cubesat.rtc:
@@ -33,6 +34,7 @@ class task(Task):
         boot = cubesat.c_boot
         current_file = f"/sd/logs/telemetry/{boot:05}/{hour_stamp}"
         telemetry_packet = logs.telemetry_packet(t)
+        print("Writing telemetry packet [size = {}] to {}".format(len(telemetry_packet), current_file))
         file = open(current_file, "ab+")
         file.write(telemetry_packet)
         file.close()

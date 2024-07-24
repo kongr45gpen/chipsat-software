@@ -78,7 +78,7 @@ class _Satellite:
     instance = None
     data_cache = {}
 
-    cam_pin = digitalio.DigitalInOut(board.PAYLOAD_EN)
+    cam_pin = digitalio.DigitalInOut(board.CAM_EN)
     cam_pin.direction = digitalio.Direction.OUTPUT
 
     watchdog_pin = digitalio.DigitalInOut(board.WDT_EN)
@@ -115,7 +115,8 @@ class _Satellite:
         self.i2c1
         self.i2c2
         self.i2c3
-        self.spi
+        self.spi1
+        self.spi2
         self.sdcard
         self.vfs
         self.neopixel
@@ -140,7 +141,7 @@ class _Satellite:
         """initialize UART communication with cameraboard
         raise cam_pin high to turn on camera"""
         try:
-            return busio.UART(board.TX0, board.RX0, baudrate=115200)
+            return busio.UART(board.TX, board.RX, baudrate=115200)
         except Exception as e:
             print(f"[ERROR][Initializing UART]: {e}")
 
@@ -148,7 +149,7 @@ class _Satellite:
     def i2c1(self):
         """ Initialize I2C1 bus """
         try:
-            return busio.I2C(board.SCL1, board.SDA1, frequency=400000)
+            return busio.I2C(board.SCL1, board.SDA1, frequency=100000)
         except Exception as e:
             print("[ERROR][Initializing I2C1]", e)
 
@@ -179,18 +180,26 @@ class _Satellite:
         raise ValueError("Invalid I2C Index")
 
     @device
-    def spi(self):
+    def spi1(self):
         """ Initialize SPI bus """
         try:
-            return busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
+            return busio.SPI(board.SCK1, MOSI=board.MOSI1, MISO=board.MISO1)
         except Exception as e:
-            print("[ERROR][Initializing SPI]", e)
+            print("[ERROR][Initializing SPI1]", e)
+
+    @device
+    def spi2(self):
+        """ Initialize SPI bus """
+        try:
+            return busio.SPI(board.SCK2, MOSI=board.MOSI2, MISO=board.MISO2)
+        except Exception as e:
+            print("[ERROR][Initializing SPI2]", e)
 
     @device
     def sdcard(self):
         """ Define SD Parameters and initialize SD Card """
         try:
-            return sdcardio.SDCard(self.spi, board.SD_CS, baudrate=4000000)
+            return sdcardio.SDCard(self.spi1, board.SD_CS, baudrate=4000000)
         except Exception as e:
             print('[ERROR][Initializing SD Card]', e)
 
@@ -259,7 +268,7 @@ class _Satellite:
             print('[ERROR][Initializing Radio]', e)
 
         try:
-            radio = pycubed_rfm9x_lora.RFM9x(self.spi,
+            radio = pycubed_rfm9x_lora.RFM9x(self.spi2,
                                              self._rf_cs,
                                              self._rf_rst,
                                              rf_config.FREQUENCY,
@@ -287,24 +296,7 @@ class _Satellite:
     @device
     def sun_yn(self):
         """ Initialize the -Y sun sensor """
-        try:
-            if hw_config.SUN_TYPE == hw_config.SUN_TYPE_TSL2561:
-                return adafruit_tsl2561.TSL2561(
-                    self.i2c(hw_config.SUN_YN_I2C),
-                    address=hw_config.SUN_YN_ADDRESS)
-            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
-                return opt3001.OPT3001(
-                    self.i2c(hw_config.SUN_YN_I2C),
-                    address=hw_config.SUN_YN_ADDRESS)
-            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
-                return OPT4001.OPT4001(
-                    self.i2c(hw_config.SUN_YN_I2C),
-                    address=hw_config.SUN_YN_ADDRESS,
-                    conversion_time=4,
-                    operating_mode=3)
-        except Exception as e:
-            print(f'[ERROR][Initializing Sun Sensor -Y] {e}, ' +
-                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+        return None
 
     @device
     def sun_zn(self):
@@ -331,46 +323,12 @@ class _Satellite:
     @device
     def sun_xn(self):
         """ Initialize the -X sun sensor """
-        try:
-            if hw_config.SUN_TYPE == hw_config.SUN_TYPE_TSL2561:
-                return adafruit_tsl2561.TSL2561(
-                    self.i2c(hw_config.SUN_XN_I2C),
-                    address=hw_config.SUN_XN_ADDRESS)
-            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
-                return opt3001.OPT3001(
-                    self.i2c(hw_config.SUN_XN_I2C),
-                    address=hw_config.SUN_XN_ADDRESS)
-            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
-                return OPT4001.OPT4001(
-                    self.i2c(hw_config.SUN_XN_I2C),
-                    address=hw_config.SUN_XN_ADDRESS,
-                    conversion_time=4,
-                    operating_mode=3)
-        except Exception as e:
-            print(f'[ERROR][Initializing Sun Sensor -X] {e}, ' +
-                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+        return None
 
     @device
     def sun_yp(self):
         """ Initialize the +Y sun sensor """
-        try:
-            if hw_config.SUN_TYPE == hw_config.SUN_TYPE_TSL2561:
-                return adafruit_tsl2561.TSL2561(
-                    self.i2c(hw_config.SUN_YP_I2C),
-                    address=hw_config.SUN_YP_ADDRESS)
-            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
-                return opt3001.OPT3001(
-                    self.i2c(hw_config.SUN_YP_I2C),
-                    address=hw_config.SUN_YP_ADDRESS)
-            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
-                return OPT4001.OPT4001(
-                    self.i2c(hw_config.SUN_YP_I2C),
-                    address=hw_config.SUN_YP_ADDRESS,
-                    conversion_time=4,
-                    operating_mode=3)
-        except Exception as e:
-            print(f'[ERROR][Initializing Sun Sensor +Y] {e}, ' +
-                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+        return None
 
     @device
     def sun_zp(self):
@@ -397,24 +355,7 @@ class _Satellite:
     @device
     def sun_xp(self):
         """ Initialize the +X sun sensor """
-        try:
-            if hw_config.SUN_TYPE == hw_config.SUN_TYPE_TSL2561:
-                return adafruit_tsl2561.TSL2561(
-                    self.i2c(hw_config.SUN_XP_I2C),
-                    address=hw_config.SUN_XP_ADDRESS)
-            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT3001:
-                return opt3001.OPT3001(
-                    self.i2c(hw_config.SUN_XP_I2C),
-                    address=hw_config.SUN_XP_ADDRESS)
-            elif hw_config.SUN_TYPE == hw_config.SUN_TYPE_OPT4001:
-                return OPT4001.OPT4001(
-                    self.i2c(hw_config.SUN_XP_I2C),
-                    address=hw_config.SUN_XP_ADDRESS,
-                    conversion_time=4,
-                    operating_mode=3)
-        except Exception as e:
-            print(f'[ERROR][Initializing Sun Sensor +X] {e}, ' +
-                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+        return None
 
     @device
     def drv_x(self):
@@ -463,18 +404,7 @@ class _Satellite:
     @device
     def rtc(self):
         """ Initialize Real Time Clock """
-        try:
-            rtc = PCF8523(self.i2c(hw_config.RTC_I2C))
-            rtc.high_capacitance = False
-            if rtc.lost_power:
-                restore_time = time.struct_time((2000, 0, 0, 0, 0, 0, 0, -1, -1))
-                print(f"RTC lost power, RTC time = {rtc.datetime}, restoring to {restore_time}")
-                rtc.datetime = restore_time
-                self.f_datetime_valid = False
-            return rtc
-        except Exception as e:
-            print(f'[ERROR][Initializing RTC] {e}, ' +
-                  f'is HARDWARE_VERSION = {hw_config.HARDWARE_VERSION} correct?')
+        return None
 
     @device
     def current_sensor(self):
@@ -565,8 +495,8 @@ class _Satellite:
             vbat += self._vbatt.value * vref / 65536
 
         # vbat / 50 = average of all battery voltage values read
-        # 100k/100k voltage divider
-        voltage = (vbat / 50) * (100 + 100) / 100
+        # 240k/680k voltage divider
+        voltage = (vbat / 50) * (240 + 680) / 680
 
         # volts
         return voltage

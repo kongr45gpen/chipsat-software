@@ -55,12 +55,12 @@ async def run(result_dict):
     Check all that all sun sensors exists, and are properly configured
     """
     print("Testing Sun Sensors\n")
-    result_dict["sun_vector_consistency"] = consistency_test()
+    # result_dict["sun_vector_consistency"] = consistency_test()
     sensors = [
-        (cubesat.sun_xn, "X-"),
-        (cubesat.sun_xp, "X+"),
-        (cubesat.sun_yn, "Y-"),
-        (cubesat.sun_yp, "Y+"),
+        # (cubesat.sun_xn, "X-"),
+        # (cubesat.sun_xp, "X+"),
+        # (cubesat.sun_yn, "Y-"),
+        # (cubesat.sun_yp, "Y+"),
         (cubesat.sun_zn, "Z-"),
         (cubesat.sun_zp, "Z+"),
     ]

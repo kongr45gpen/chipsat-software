@@ -10,7 +10,7 @@ sensor.set_framesize(sensor.QVGA)         # Set frame size to HD (640 x 480)
 sensor.skip_frames(time=2000)           # Wait for settings take effect.
 
 # UART 3, and baudrate.
-uart = UART(3, 115200)
+uart = UART(2, 115200)
 
 # constants
 CONFIRMATION_SEND_CODE = 0xAA
@@ -56,7 +56,7 @@ def process_image() -> str:
     for blob in blobs:
         if blob.pixels() > 150:
             img.draw_rectangle(blob.rect(), color=(0, 255, 0))
-    if len(blobs) == 0:
+    if len(blobs) == 0 and False:
         return NO_IMAGE
 
     img.save(filepath, quality=90)
